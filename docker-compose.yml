@@ -1,0 +1,56 @@
+version: '3.3'
+services:
+  web:
+    image: nginx:latest
+    container_name: wardsonar_web
+    restart: unless-stopped
+    domainname: wardsonar.test
+    hostname: wardsonar
+    tty: true
+    volumes:
+      - .:/var/www/html
+      - ./conf/nginx/default:/etc/nginx/conf.d/default.conf
+      - ./conf/ssl:/etc/ssl/self-signed
+    depends_on:
+      - app
+    networks:
+      - wardsonar-net
+
+  app:
+    build: ./conf/php
+    image: wardsonar:latest
+    container_name: wardsonar_app
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    links:
+      - db:mysql
+    depends_on:
+      - db
+    networks:
+      - wardsonar-net
+
+  db:
+    image: mariadb:latest
+    container_name: wardsonar_db
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./conf/db/import:/docker-entrypoint-initdb.d/
+      - ./conf/db/conf/:/etc/mysql/conf.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=wardsonar
+      - MYSQL_USER=wardsonar_user
+      - MYSQL_PASSWORD=wardsonar_pass
+    networks:
+      - wardsonar-net
+
+volumes:
+  db_data:
+
+networks:
+  wardsonar-net:
