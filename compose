@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# Set environment variables for dev
+export APP_ENV=${APP_ENV:-local}
+export APP_PORT=${APP_PORT:-80}
+export DB_ROOT_PASS=${DB_ROOT_PASS:-root}
+export DB_NAME=${DB_NAME:-wardsonar}
+export DB_USER=${DB_USER:-wardsonar}
+export DB_PASS=${DB_PASS:-secret}
+export DB_PORT=${DB_PORT:-3306}
+
+COMPOSE="docker-compose"
+
+# Disable pseudo-TTY allocation for CI. The -T flag removes interaction.
+TTY=""
+
+# Travis CI provides a CI environment variable which can be used to check if
+# this is running in a CI environment.
+if [[ ${CI:-false} == "true" ]]; then
+    TTY="-T"
+fi
+
+if [ $# -gt 0 ];then
+
+    # If "art" is used, pass-thru to "artisan"
+    # inside a new container
+    if [ "$1" == "art" ]; then
+        shift 1
+        $COMPOSE run --rm ${TTY} \
+            -w /var/www/html \
+            app \
+            php artisan "$@"
+
+    # If "composer" is used, pass-thru to "composer"
+    # inside a new container
+    elif [ "$1" == "composer" ]; then
+        shift 1
+        $COMPOSE run --rm ${TTY} \
+            -w /var/www/html \
+            app \
+            composer "$@"
+
+    # If "test" is used, run unit tests,
+    # pass-thru any extra arguments to php-unit
+    elif [ "$1" == "test" ]; then
+        shift 1
+        $COMPOSE run --rm ${TTY} \
+            -w /var/www/html \
+            app \
+            ./vendor/bin/phpunit "$@"
+    # Else, pass-thru args to docker-compose
+    else
+        $COMPOSE "$@"
+    fi
+else
+    $COMPOSE ps
+fi

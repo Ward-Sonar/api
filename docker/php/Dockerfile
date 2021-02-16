@@ -4,6 +4,8 @@ FROM php:${PHP}-fpm
 
 ARG PHP
 
+ARG WWWUID=1000
+
 LABEL maintainer="Stuart Laverick"
 
 # Environment variables
@@ -67,10 +69,6 @@ ADD local.ini /usr/local/etc/php/conf.d/local.ini
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY start.sh /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
-
-# Add user for laravel application
-RUN groupadd -g 1000 www
-RUN useradd -u 1000 -ms /bin/bash -g www www
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
