@@ -2,7 +2,8 @@
 
 namespace Tests\Integration;
 
-use PHPUnit\Framework\TestCase;
+use App\Models\Submission;
+use Tests\TestCase;
 
 class SubmissionTest extends TestCase
 {
@@ -11,7 +12,10 @@ class SubmissionTest extends TestCase
      */
     public function testCanPersistAndRetrieveRecords()
     {
-        factory(Submission::class, 10)->create();
+        Submission::factory()
+            ->count(10)
+            ->for(\App\Models\Client::factory())
+            ->create();
 
         $submissions = Submission::all();
 
@@ -19,12 +23,79 @@ class SubmissionTest extends TestCase
     }
 
     /**
+     * It has an atmosphere
+     *
+     * @return void
+     */
+    public function testHasAtmosphereProperty()
+    {
+        $submission = Submission::factory()
+            ->for(\App\Models\Client::factory())
+            ->create();
+        $this->assertIsNumeric($submission->atmosphere);
+    }
+
+    /**
+     * It has a direction
+     *
+     * @return void
+     */
+    public function testHasDirectionProperty()
+    {
+        $submission = Submission::factory()
+            ->for(\App\Models\Client::factory())
+            ->create();
+        $this->assertIsNumeric($submission->direction);
+    }
+
+    /**
+     * It has a comment
+     *
+     * @return void
+     */
+    public function testHasCommentProperty()
+    {
+        $submission = Submission::factory()
+            ->for(\App\Models\Client::factory())
+            ->create();
+        $this->assertNotEmpty($submission->comment);
+    }
+
+    /**
+     * It has an abandoned
+     *
+     * @return void
+     */
+    public function testHasAbandonedProperty()
+    {
+        $submission = Submission::factory()
+            ->for(\App\Models\Client::factory())
+            ->create();
+        $this->assertIsBool($submission->abandoned);
+    }
+
+    /**
+     * It has a client_id
+     *
+     * @return void
+     */
+    public function testHasClientIdProperty()
+    {
+        $submission = Submission::factory()
+            ->for(\App\Models\Client::factory())
+            ->create();
+        $this->assertNotEmpty($submission->client_id);
+    }
+
+    /**
      * @return void
      */
     public function testHasAssociatedCauses()
     {
-        $submission = factory(Submission::class)->create();
-        $cause = factory(\App\Models\Cause::class)->create();
+        $submission = Submission::factory()
+            ->for(\App\Models\Client::factory())
+            ->create();
+        $cause = \App\Models\Cause::factory()->create();
 
         $submission->causes()->attach($cause->id);
 
@@ -36,8 +107,10 @@ class SubmissionTest extends TestCase
      */
     public function testHasAssociatedClient()
     {
-        $submission = factory(Submission::class)->create();
-        $client = factory(\App\Models\Client::class)->create();
+        $submission = Submission::factory()
+            ->for(\App\Models\Client::factory())
+            ->create();
+        $client = \App\Models\Client::factory()->create();
 
         $submission->client()->associate($client);
 

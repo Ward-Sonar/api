@@ -2,18 +2,17 @@
 
 namespace Tests\Unit;
 
+use App\Models\Cause;
 use PHPUnit\Framework\TestCase;
 
 class CauseTest extends TestCase
 {
     /**
-     * It has a name
-     *
      * @return void
      */
-    public function testHasTextProperty()
+    public function testHasASubmissionsMethod()
     {
-        $cause = factory(Cause::class)->create();
-        $this->assertNotEmpty($cause->text);
+        $cause = new Cause();
+        $this->assertTrue(method_exists($cause, 'submissions'));
     }
 }

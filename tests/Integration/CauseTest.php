@@ -2,7 +2,8 @@
 
 namespace Tests\Integration;
 
-use PHPUnit\Framework\TestCase;
+use App\Models\Cause;
+use Tests\TestCase;
 
 class CauseTest extends TestCase
 {
@@ -11,7 +12,7 @@ class CauseTest extends TestCase
      */
     public function testCanPersistAndRetrieveRecords()
     {
-        factory(Cause::class, 10)->create();
+        Cause::factory()->count(10)->create();
 
         $causes = Cause::all();
 
@@ -19,12 +20,25 @@ class CauseTest extends TestCase
     }
 
     /**
+     * It has a name
+     *
+     * @return void
+     */
+    public function testHasTextProperty()
+    {
+        $cause = Cause::factory()->create();
+        $this->assertNotEmpty($cause->text);
+    }
+
+    /**
      * @return void
      */
     public function testHasAssociatedSubmissions()
     {
-        $cause = factory(Cause::class)->create();
-        $submission = factory(\App\Models\Submission::class)->create();
+        $cause = Cause::factory()->create();
+        $submission = \App\Models\Submission::factory()
+            ->for(\App\Models\Client::factory())
+            ->create();
 
         $cause->submissions()->attach($submission->id);
 

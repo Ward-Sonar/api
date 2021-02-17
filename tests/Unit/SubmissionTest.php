@@ -2,62 +2,26 @@
 
 namespace Tests\Unit;
 
+use App\Models\Submission;
 use PHPUnit\Framework\TestCase;
 
 class SubmissionTest extends TestCase
 {
     /**
-     * It has an atmosphere
-     *
      * @return void
      */
-    public function testHasAtmosphereProperty()
+    public function testHasACausesMethod()
     {
-        $submission = factory(Submission::class)->create();
-        $this->assertNotEmpty($submission->atmosphere);
+        $submission = new Submission();
+        $this->assertTrue(method_exists($submission, 'causes'));
     }
 
     /**
-     * It has a direction
-     *
      * @return void
      */
-    public function testHasDirectionProperty()
+    public function testHasAClientMethod()
     {
-        $submission = factory(Submission::class)->create();
-        $this->assertNotEmpty($submission->direction);
-    }
-
-    /**
-     * It has a comment
-     *
-     * @return void
-     */
-    public function testHasCommentProperty()
-    {
-        $submission = factory(Submission::class)->create();
-        $this->assertNotEmpty($submission->comment);
-    }
-
-    /**
-     * It has an abandoned
-     *
-     * @return void
-     */
-    public function testHasAbandonedProperty()
-    {
-        $submission = factory(Submission::class)->create();
-        $this->assertNotEmpty($submission->abandoned);
-    }
-
-    /**
-     * It has a client_id
-     *
-     * @return void
-     */
-    public function testHasClientIdProperty()
-    {
-        $submission = factory(Submission::class)->create();
-        $this->assertNotEmpty($submission->client_id);
+        $submission = new Submission();
+        $this->assertTrue(method_exists($submission, 'client'));
     }
 }

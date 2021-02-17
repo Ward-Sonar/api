@@ -2,7 +2,8 @@
 
 namespace Tests\Integration;
 
-use PHPUnit\Framework\TestCase;
+use App\Models\Client;
+use Tests\TestCase;
 
 class ClientTest extends TestCase
 {
@@ -11,7 +12,7 @@ class ClientTest extends TestCase
      */
     public function testCanPersistAndRetrieveRecords()
     {
-        factory(Client::class, 10)->create();
+        Client::factory()->count(10)->create();
 
         $clients = Client::all();
 
@@ -19,12 +20,47 @@ class ClientTest extends TestCase
     }
 
     /**
+     * It has a name
+     *
+     * @return void
+     */
+    public function testHasNameProperty()
+    {
+        $client = Client::factory()->create();
+        $this->assertNotEmpty($client->name);
+    }
+
+    /**
+     * It has a secret
+     *
+     * @return void
+     */
+    public function testHasSecretProperty()
+    {
+        $client = Client::factory()->create();
+        $this->assertNotEmpty($client->secret);
+    }
+
+    /**
+     * It has a urlkey
+     *
+     * @return void
+     */
+    public function testHasUrlKeyProperty()
+    {
+        $client = Client::factory()->create();
+        $this->assertNotEmpty($client->urlkey);
+    }
+
+    /**
      * @return void
      */
     public function testHasAssociatedSubmissions()
     {
-        $client = factory(Client::class)->create();
-        $submission = factory(\App\Models\Submission::class)->create();
+        $client = Client::factory()->create();
+        $submission = \App\Models\Submission::factory()
+            ->for(\App\Models\Client::factory())
+            ->create();
 
         $client->submissions()->save($submission);
 
