@@ -56,6 +56,11 @@ if [ $# -gt 0 ];then
             -w /var/www/html \
             app \
             vendor/bin/php-cs-fixer fix --config=.php_cs --allow-risky=yes --verbose "$@"
+    # If "deploy" is used, run deploy script,
+    # pass-thru any extra arguments to deploy script
+    elif [ "$1" == "deploy" ]; then
+        export DEPLOY_ENV=${2:-"staging"}
+        ./docker/deploy-ecs.sh
     # Else, pass-thru args to docker-compose
     else
         $COMPOSE "$@"
