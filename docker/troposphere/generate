@@ -2,7 +2,5 @@
 
 script_path=`dirname $(realpath $0)`
 
-echo "$script_path"
-
 docker build -t ayup/wardsonar-troposphere:latest "$script_path"
 docker run --rm -v "$script_path/../../aws":/tmp ayup/wardsonar-troposphere python cloudformation.py > "$script_path/../../aws/cloudformation.json"

@@ -60,7 +60,6 @@ def create_database_name_parameter(template):
         Parameter(
             'DatabaseName',
             Description='The database schema name.',
-            NoEcho=True,
             Type='String',
             MinLength='8',
             MaxLength='41',
@@ -75,7 +74,6 @@ def create_database_username_parameter(template):
         Parameter(
             'DatabaseUserName',
             Description='The database admin name.',
-            NoEcho=True,
             Type='String',
             MinLength='8',
             MaxLength='41',

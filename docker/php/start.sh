@@ -22,9 +22,14 @@ chmod -R ugo+rw /.composer
 
 # Run a command or supervisord
 if [ $# -gt 0 ]; then
-    echo "Running $@ as www-data"
-    # If we passed a command, run it instead
-    exec gosu www-data "$@"
+    echo "Environment: $CONTAINER_ENV"
+    if [ "$CONTAINER_ENV" == "local" ]; then
+        echo "Running $@ as www-data"
+        # If we passed a command, run it instead
+        exec gosu www-data "$@"
+    else
+        exec "$@"
+    fi
 else
     # Otherwise start supervisord
     /usr/bin/supervisord
