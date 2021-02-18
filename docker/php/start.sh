@@ -9,6 +9,8 @@ fi
 
 # Ensure /.composer exists and is writable
 if [ ! -d /.composer ]; then
+    ME=`id`
+    echo "Running as $ME"
     echo "Composer home before $COMPOSER_HOME"
     echo "Create .composer directory in $PWD"
     mkdir /.composer
