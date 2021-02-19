@@ -16,12 +16,14 @@
         "laravel/tinker": "^2.5"
     },
     "require-dev": {
+        "darkaonline/l5-swagger": "^8.0",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
         "friendsofphp/php-cs-fixer": "^2.18",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.0",
+        "osteel/openapi-httpfoundation-testing": "^0.2.0",
         "phpunit/phpunit": "^9.3.3"
     },
     "config": {
