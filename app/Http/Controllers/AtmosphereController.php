@@ -4,23 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class SubmissionController extends Controller
+class AtmosphereController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @OA\Post(
-     *      path="/submission",
-     *      operationId="storeSubmission",
+     * @OA\Get(
+     *      path="/atmosphere/{urlkey}",
+     *      operationId="getClientSubmissionsLatest",
      *      tags={"Submission"},
-     *      summary="Store new submission",
-     *      description="Creates a record and returns new record data",
-     *      @OA\RequestBody(
+     *      summary="Get the latest submission for a client",
+     *      description="Returns a single record data",
+     *      @OA\Parameter(
+     *          name="urlkey",
+     *          description="Client urlkey",
      *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/StoreSubmissionRequest")
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *      ),
      *      @OA\Response(
-     *          response=201,
+     *          response=200,
      *          description="Successful operation",
      *          @OA\JsonContent(ref="#/components/schemas/Submission")
      *       ),
@@ -30,7 +35,7 @@ class SubmissionController extends Controller
      *      ),
      *      @OA\Response(
      *          response=401,
-     *          description="Unauthenticated"
+     *          description="Unauthenticated",
      *      ),
      *      @OA\Response(
      *          response=403,
