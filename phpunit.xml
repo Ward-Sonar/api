@@ -30,6 +30,6 @@
         <server name="QUEUE_CONNECTION" value="sync"/>
         <server name="SESSION_DRIVER" value="array"/>
         <server name="TELESCOPE_ENABLED" value="false"/>
-        <ini name="display_errors" value="true"/>
+        <server name="APP_KEY" value="base64:k3oXdsGdErjvAPV8wYXOL9DT8O5cP6JRKiuqtWAf96U="/>
     </php>
 </phpunit>
