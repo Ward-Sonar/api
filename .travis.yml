@@ -1,0 +1,27 @@
+os: linux
+dist: focal
+
+branches:
+  only:
+    # Tagged releases
+    - /^[0-9]{4}\.[0-9]{2}\.[0-9]{2}\.[0-9]+$/
+    # Master
+    - master
+    # Develop
+    - develop
+
+services:
+  - docker
+
+before_script:
+  - if [ ! -z "$DOCKER_USER" ] && [ ! -z "$DOCKER_PWD" ];  then echo ${DOCKER_PWD} | docker login --username ${DOCKER_USER} --password-stdin; fi
+  - ./compose build
+  - ./compose up -d
+  - ./compose composer install
+
+script:
+  - ./compose style
+  - ./compose test
+
+after_failure:
+  - cat storage/logs/testing.log
