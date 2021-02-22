@@ -34,13 +34,9 @@ class AtmosphereController extends Controller
      *          description="Bad Request"
      *      ),
      *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
+     *          response=404,
+     *          description="Unknown Client",
      *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
      * )
      *
      * @param  \Illuminate\Http\Request  $request

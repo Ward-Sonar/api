@@ -32,10 +32,6 @@ class SubmissionController extends Controller
      *          response=401,
      *          description="Unauthenticated"
      *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      ),
      *      security={
      *         {"clientSecret": {}}
      *     }
