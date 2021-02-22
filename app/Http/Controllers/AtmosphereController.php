@@ -12,7 +12,7 @@ class AtmosphereController extends Controller
      * @OA\Get(
      *      path="/atmosphere/{urlkey}",
      *      operationId="getClientSubmissionsLatest",
-     *      tags={"Submission"},
+     *      tags={"Atmosphere"},
      *      summary="Get the latest submission for a client",
      *      description="Returns a single record data",
      *      @OA\Parameter(
@@ -27,7 +27,7 @@ class AtmosphereController extends Controller
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/Submission")
+     *          @OA\JsonContent(ref="#/components/schemas/AtmosphereResource")
      *       ),
      *      @OA\Response(
      *          response=400,

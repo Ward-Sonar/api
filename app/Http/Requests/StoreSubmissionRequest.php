@@ -9,7 +9,39 @@ use Illuminate\Foundation\Http\FormRequest;
  *     title="Store Submission Request",
  *     description="Store submission request body data",
  *     required={"abandoned"},
- *     type="object"
+ *     type="object",
+ *     @OA\Property(
+ *         property="data",
+ *         type="object",
+ *         @OA\Property(
+ *             property="type",
+ *             type="string"
+ *         ),
+ *         @OA\Property(
+ *             property="attributes",
+ *             type="object",
+ *
+ *             @OA\Property(
+ *                 property="atmosphere",
+ *                 ref="#/components/schemas/Submission/properties/atmosphere"
+ *             ),
+ *
+ *             @OA\Property(
+ *                 property="direction",
+ *                 ref="#/components/schemas/Submission/properties/direction"
+ *             ),
+ *
+ *             @OA\Property(
+ *                 property="comment",
+ *                 ref="#/components/schemas/Submission/properties/comment"
+ *             ),
+ *
+ *             @OA\Property(
+ *                 property="abandoned",
+ *                 ref="#/components/schemas/Submission/properties/abandoned"
+ *             )
+ *         )
+ *     )
  * )
  */
 class StoreSubmissionRequest extends FormRequest
@@ -27,12 +59,6 @@ class StoreSubmissionRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @OA\RequestBody(
-     *     request="Submission",
-     *     description="Submission object to be stored",
-     *     required=true,
-     *     @OA\JsonContent(ref="#/components/schemas/Submission"),
-     * )
      *
      * @return array
      */

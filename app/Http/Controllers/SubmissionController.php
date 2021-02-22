@@ -22,7 +22,7 @@ class SubmissionController extends Controller
      *      @OA\Response(
      *          response=201,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/Submission")
+     *          @OA\JsonContent(ref="#/components/schemas/SubmissionResource")
      *       ),
      *      @OA\Response(
      *          response=400,
@@ -35,7 +35,10 @@ class SubmissionController extends Controller
      *      @OA\Response(
      *          response=403,
      *          description="Forbidden"
-     *      )
+     *      ),
+     *      security={
+     *         {"clientSecret": {}}
+     *     }
      * )
      *
      * @param  \Illuminate\Http\Request  $request

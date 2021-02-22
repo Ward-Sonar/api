@@ -22,7 +22,7 @@
         "/atmosphere/{urlkey}": {
             "get": {
                 "tags": [
-                    "Submission"
+                    "Atmosphere"
                 ],
                 "summary": "Get the latest submission for a client",
                 "description": "Returns a single record data",
@@ -44,7 +44,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Submission"
+                                    "$ref": "#/components/schemas/AtmosphereResource"
                                 }
                             }
                         }
@@ -85,7 +85,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Submission"
+                                    "$ref": "#/components/schemas/SubmissionResource"
                                 }
                             }
                         }
@@ -99,7 +99,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "clientSecret": []
+                    }
+                ]
             }
         }
     },
@@ -111,7 +116,100 @@
                 "required": [
                     "abandoned"
                 ],
+                "properties": {
+                    "data": {
+                        "properties": {
+                            "type": {
+                                "type": "string"
+                            },
+                            "attributes": {
+                                "properties": {
+                                    "atmosphere": {
+                                        "$ref": "#/components/schemas/Submission/properties/atmosphere"
+                                    },
+                                    "direction": {
+                                        "$ref": "#/components/schemas/Submission/properties/direction"
+                                    },
+                                    "comment": {
+                                        "$ref": "#/components/schemas/Submission/properties/comment"
+                                    },
+                                    "abandoned": {
+                                        "$ref": "#/components/schemas/Submission/properties/abandoned"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
                 "type": "object"
+            },
+            "AtmosphereResource": {
+                "properties": {
+                    "data": {
+                        "properties": {
+                            "type": {
+                                "type": "string"
+                            },
+                            "attributes": {
+                                "properties": {
+                                    "atmosphere": {
+                                        "$ref": "#/components/schemas/Submission/properties/atmosphere"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "AtmosphereResource"
+                }
+            },
+            "SubmissionResource": {
+                "properties": {
+                    "data": {
+                        "properties": {
+                            "type": {
+                                "type": "string"
+                            },
+                            "id": {
+                                "$ref": "#/components/schemas/Submission/properties/id"
+                            },
+                            "attributes": {
+                                "properties": {
+                                    "atmosphere": {
+                                        "$ref": "#/components/schemas/Submission/properties/atmosphere"
+                                    },
+                                    "direction": {
+                                        "$ref": "#/components/schemas/Submission/properties/direction"
+                                    },
+                                    "comment": {
+                                        "$ref": "#/components/schemas/Submission/properties/comment"
+                                    },
+                                    "abandoned": {
+                                        "$ref": "#/components/schemas/Submission/properties/abandoned"
+                                    },
+                                    "created_at": {
+                                        "$ref": "#/components/schemas/Submission/properties/created_at"
+                                    },
+                                    "updated_at": {
+                                        "$ref": "#/components/schemas/Submission/properties/updated_at"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "SubmissionResource"
+                }
             },
             "Submission": {
                 "title": "Submission Model",
@@ -121,9 +219,21 @@
                     "abandoned"
                 ],
                 "properties": {
-                    "": {
+                    "id": {
+                        "title": "id",
+                        "description": "Submission ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "secret": {
+                        "title": "secret",
+                        "description": "The string used to identify each ward (client)"
+                    },
+                    "atmosphere": {
                         "title": "atmosphere",
                         "description": "Ward atmosphere state",
+                        "type": "integer",
                         "format": "int64",
                         "enum": [
                             -2,
@@ -132,6 +242,41 @@
                             1,
                             2
                         ]
+                    },
+                    "direction": {
+                        "title": "direction",
+                        "description": "Is the ward atmosphere getting better, worse or the same? between -1 and +1",
+                        "type": "integer",
+                        "format": "int64",
+                        "enum": [
+                            -1,
+                            0,
+                            1
+                        ]
+                    },
+                    "comment": {
+                        "title": "comment",
+                        "description": "An open format comment to accompany each submission",
+                        "type": "string"
+                    },
+                    "abandoned": {
+                        "title": "abandoned",
+                        "description": "A flag to indicate if the submission was completed",
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "title": "created_at",
+                        "description": "Model Creation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": "true"
+                    },
+                    "updated_at": {
+                        "title": "updated_at",
+                        "description": "Model Updated timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": "true"
                     }
                 },
                 "type": "object",
@@ -140,17 +285,11 @@
                 }
             }
         },
-        "requestBodies": {
-            "Submission": {
-                "description": "Submission object to be stored",
-                "required": true,
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Submission"
-                        }
-                    }
-                }
+        "securitySchemes": {
+            "clientSecret": {
+                "type": "apiKey",
+                "name": "X-CLIENT-SECRET",
+                "in": "header"
             }
         }
     },
