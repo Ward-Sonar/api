@@ -4,26 +4,84 @@ namespace Tests\Feature;
 
 use App\Models\Client;
 use App\Models\Submission;
+use Illuminate\Support\Str;
 use Osteel\OpenApi\Testing\ResponseValidatorBuilder;
 use Tests\TestCase;
 
 class AtmosphereTest extends TestCase
 {
     /**
+     * Client
+     *
+     * @var App\Models\Client
+     **/
+    protected $client;
+
+    /**
+     * Plain text client secret
+     *
+     * @var string
+     **/
+    protected $client_secret;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->client_secret = Str::random(60);
+
+        $this->client = Client::factory()->create([
+            'secret' => hash('sha256', $this->client_secret),
+        ]);
+    }
+
+    /**
+     * Client requires a secret to read atmosphere
+     *
+     * @return void
+     */
+    public function testGetAtmosphereWithoutSecret401()
+    {
+        $response = $this->getJson(
+            '/api/' . $this->version . '/atmosphere/' . $this->client->urlkey,
+        );
+
+        $response->assertStatus(401);
+    }
+
+    /**
+     * Client requires a valid secret to read atmosphere
+     *
+     * @return void
+     */
+    public function testGetAtmosphereWithBadSecret401()
+    {
+        $response = $this->getJson(
+            '/api/' . $this->version . '/atmosphere/badsecret',
+        );
+
+        $response->assertStatus(401);
+    }
+
+    /**
      * Client cannot read atmosphere without a Url key
      *
      * @return void
      */
-    public function testGetAtmosphereWithoutUrlKey400()
+    public function testGetAtmosphereWithoutUrlKey404()
     {
-        $client = Client::factory()->create();
         $submission = Submission::factory()
-            ->for(Client::factory())
+            ->for($this->client)
             ->create();
 
-        $response = $this->get('/atmosphere');
+        $response = $this->getJson(
+            '/api/' . $this->version . '/atmosphere',
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
-        $response->assertStatus(400);
+        $response->assertStatus(404);
     }
 
     /**
@@ -33,12 +91,16 @@ class AtmosphereTest extends TestCase
      */
     public function testGetAtmosphereBadUrlKey404()
     {
-        $client = Client::factory()->create();
         $submission = Submission::factory()
-            ->for(Client::factory())
+            ->for($this->client)
             ->create();
 
-        $response = $this->get('/atmosphere/badkey');
+        $response = $this->getJson(
+            '/api/' . $this->version . '/atmosphere/badkey',
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
         $response->assertStatus(404);
     }
@@ -50,18 +112,26 @@ class AtmosphereTest extends TestCase
      */
     public function testGetAtmosphereGoodUrlKey200()
     {
-        $client = Client::factory()->create();
         $submission = Submission::factory()
-            ->for(Client::factory())
+            ->for($this->client)
             ->create();
 
-        $response = $this->get('/atmosphere');
+        $response = $this->getJson(
+            '/api/' . $this->version . '/atmosphere/' . $this->client->urlkey,
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
         $response->assertOk();
 
         $validator = ResponseValidatorBuilder::fromJson(storage_path('api-docs/api-docs.json'))->getValidator();
 
-        $result = $validator->validate('/atmosphere/' . $client->urlkey, 'get', $response->baseResponse);
+        $result = $validator->validate(
+            '/api/' . $this->version . '/atmosphere/' . $this->client->urlkey,
+            'get',
+            $response->baseResponse
+        );
 
         $this->assertTrue($result);
     }

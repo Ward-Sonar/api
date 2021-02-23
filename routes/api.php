@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AtmosphereController;
 use App\Http\Controllers\SubmissionController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +19,5 @@ Route::middleware(['auth:api', 'throttle:api'])
     ->prefix('v1')
     ->group(function () {
         Route::post('submission', SubmissionController::class);
+        Route::get('atmosphere/{urlkey}', AtmosphereController::class);
     });

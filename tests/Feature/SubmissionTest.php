@@ -3,11 +3,37 @@
 namespace Tests\Feature;
 
 use App\Models\Client;
+use Illuminate\Support\Str;
 use Osteel\OpenApi\Testing\ResponseValidatorBuilder;
 use Tests\TestCase;
 
 class SubmissionTest extends TestCase
 {
+    /**
+     * Client
+     *
+     * @var App\Models\Client
+     **/
+    protected $client;
+
+    /**
+     * Plain text client secret
+     *
+     * @var string
+     **/
+    protected $client_secret;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->client_secret = Str::random(60);
+
+        $this->client = Client::factory()->create([
+            'secret' => hash('sha256', $this->client_secret),
+        ]);
+    }
+
     /**
      * Client requires a secret to add a submission
      *
@@ -15,15 +41,16 @@ class SubmissionTest extends TestCase
      */
     public function testPostSubmissionWithoutSecret401()
     {
-        $client = Client::factory()->create();
-
-        $response = $this->postJson('/submission', [
-            'data' => [
-                'attributes' => [
-                    'abandoned' => true,
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'attributes' => [
+                        'abandoned' => true,
+                    ],
                 ],
-            ],
-        ]);
+            ]
+        );
 
         $response->assertStatus(401);
     }
@@ -35,17 +62,19 @@ class SubmissionTest extends TestCase
      */
     public function testPostSubmissionBadSecret401()
     {
-        $client = Client::factory()->create();
-
-        $response = $this->withHeaders([
-            'X-CLIENT-SECRET' => base64_encode('badsecret'),
-        ])->postJson('/submission', [
-            'data' => [
-                'attributes' => [
-                    'abandoned' => true,
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'attributes' => [
+                        'abandoned' => true,
+                    ],
                 ],
             ],
-        ]);
+            [
+                'Authorization' => 'Bearer badsecret',
+            ]
+        );
 
         $response->assertStatus(401);
     }
@@ -57,17 +86,19 @@ class SubmissionTest extends TestCase
      */
     public function testPostSubmissionGoodSecret201()
     {
-        $client = Client::factory()->create();
-
-        $response = $this->withHeaders([
-            'X-CLIENT-SECRET' => base64_encode($client->secret),
-        ])->postJson('/submission', [
-            'data' => [
-                'attributes' => [
-                    'abandoned' => true,
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'attributes' => [
+                        'abandoned' => true,
+                    ],
                 ],
             ],
-        ]);
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
         $response->assertStatus(201);
     }
@@ -79,16 +110,18 @@ class SubmissionTest extends TestCase
      */
     public function testPostSubmissionMissingData400()
     {
-        $client = Client::factory()->create();
-
-        $response = $this->withHeaders([
-            'X-CLIENT-SECRET' => base64_encode($client->secret),
-        ])->postJson('/submission', [
-            'data' => [
-                'attributes' => [
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'attributes' => [
+                    ],
                 ],
             ],
-        ]);
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
         $response->assertStatus(400);
     }
@@ -100,35 +133,41 @@ class SubmissionTest extends TestCase
      */
     public function testPostSubmissionBadAtmosphereData400()
     {
-        $client = Client::factory()->create();
-
-        $response = $this->withHeaders([
-            'X-CLIENT-SECRET' => base64_encode($client->secret),
-        ])->postJson('/submission', [
-            'data' => [
-                'attributes' => [
-                    'abandoned' => false,
-                    'atmosphere' => -3,
-                    'direction' => 0,
-                    'comment' => 'this is a comment',
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'attributes' => [
+                        'abandoned' => false,
+                        'atmosphere' => -3,
+                        'direction' => 0,
+                        'comment' => 'this is a comment',
+                    ],
                 ],
             ],
-        ]);
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
         $response->assertStatus(400);
 
-        $response = $this->withHeaders([
-            'X-CLIENT-SECRET' => base64_encode($client->secret),
-        ])->postJson('/submission', [
-            'data' => [
-                'attributes' => [
-                    'abandoned' => false,
-                    'atmosphere' => 3,
-                    'direction' => 0,
-                    'comment' => 'this is a comment',
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'attributes' => [
+                        'abandoned' => false,
+                        'atmosphere' => 3,
+                        'direction' => 0,
+                        'comment' => 'this is a comment',
+                    ],
                 ],
             ],
-        ]);
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
         $response->assertStatus(400);
     }
@@ -140,35 +179,41 @@ class SubmissionTest extends TestCase
      */
     public function testPostSubmissionBadDirectionData400()
     {
-        $client = Client::factory()->create();
-
-        $response = $this->withHeaders([
-            'X-CLIENT-SECRET' => base64_encode($client->secret),
-        ])->postJson('/submission', [
-            'data' => [
-                'attributes' => [
-                    'abandoned' => false,
-                    'atmosphere' => 0,
-                    'direction' => -2,
-                    'comment' => 'this is a comment',
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'attributes' => [
+                        'abandoned' => false,
+                        'atmosphere' => 0,
+                        'direction' => -2,
+                        'comment' => 'this is a comment',
+                    ],
                 ],
             ],
-        ]);
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
         $response->assertStatus(400);
 
-        $response = $this->withHeaders([
-            'X-CLIENT-SECRET' => base64_encode($client->secret),
-        ])->postJson('/submission', [
-            'data' => [
-                'attributes' => [
-                    'abandoned' => false,
-                    'atmosphere' => 0,
-                    'direction' => 2,
-                    'comment' => 'this is a comment',
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'attributes' => [
+                        'abandoned' => false,
+                        'atmosphere' => 0,
+                        'direction' => 2,
+                        'comment' => 'this is a comment',
+                    ],
                 ],
             ],
-        ]);
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
         $response->assertStatus(400);
     }
@@ -180,20 +225,22 @@ class SubmissionTest extends TestCase
      */
     public function testPostSubmissionFullData201()
     {
-        $client = Client::factory()->create();
-
-        $response = $this->withHeaders([
-            'X-CLIENT-SECRET' => base64_encode($client->secret),
-        ])->postJson('/submission', [
-            'data' => [
-                'attributes' => [
-                    'abandoned' => false,
-                    'atmosphere' => -1,
-                    'direction' => 0,
-                    'comment' => 'this is a comment',
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'attributes' => [
+                        'abandoned' => false,
+                        'atmosphere' => -1,
+                        'direction' => 0,
+                        'comment' => 'this is a comment',
+                    ],
                 ],
             ],
-        ]);
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
 
         $response->assertStatus(201);
 
@@ -207,7 +254,7 @@ class SubmissionTest extends TestCase
 
         $validator = ResponseValidatorBuilder::fromJson(storage_path('api-docs/api-docs.json'))->getValidator();
 
-        $result = $validator->validate('/submission', 'post', $response->baseResponse);
+        $result = $validator->validate('/api/' . $this->version . '/submission', 'post', $response->baseResponse);
 
         $this->assertTrue($result);
     }

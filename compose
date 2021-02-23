@@ -31,6 +31,15 @@ if [ $# -gt 0 ];then
             app \
             php artisan "$@"
 
+    # If "bash" is used, open a shell
+    # inside a new container
+    elif [ "$1" == "bash" ]; then
+        shift 1
+        $COMPOSE run --rm ${TTY} \
+            -w /var/www/html \
+            app \
+            bash "$@"
+
     # If "composer" is used, pass-thru to "composer"
     # inside a new container
     elif [ "$1" == "composer" ]; then

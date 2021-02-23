@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Client;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class ClientFactory extends Factory
 {
@@ -23,8 +24,8 @@ class ClientFactory extends Factory
     {
         return [
             'name' => $this->faker->company,
-            'secret' => $this->faker->uuid,
-            'urlkey' => $this->faker->lexify('????????????'),
+            'secret' => hash('sha256', Str::random(60)),
+            'urlkey' => bin2hex(random_bytes(6)),
         ];
     }
 }
