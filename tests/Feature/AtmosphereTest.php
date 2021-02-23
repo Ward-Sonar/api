@@ -128,7 +128,7 @@ class AtmosphereTest extends TestCase
         $validator = ResponseValidatorBuilder::fromJson(storage_path('api-docs/api-docs.json'))->getValidator();
 
         $result = $validator->validate(
-            '/api/' . $this->version . '/atmosphere/' . $this->client->urlkey,
+            '/atmosphere/{urlkey}',
             'get',
             $response->baseResponse
         );

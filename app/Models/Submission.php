@@ -87,6 +87,16 @@ class Submission extends Model
     use HasFactory;
 
     /**
+     * Attributes to be cast
+     *
+     * @var array
+     **/
+    protected $casts = [
+        'atmosphere' => 'integer',
+        'direction' => 'integer',
+    ];
+
+    /**
      * The client that this submission belongs to
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

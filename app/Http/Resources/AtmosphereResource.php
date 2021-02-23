@@ -22,6 +22,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *             @OA\Property(
  *                 property="atmosphere",
  *                 ref="#/components/schemas/Submission/properties/atmosphere"
+ *             ),
+ *             @OA\Property(
+ *                 property="datetime",
+ *                 ref="#/components/schemas/Submission/properties/created_at"
  *             )
  *         )
  *     )
@@ -37,6 +41,12 @@ class AtmosphereResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'type' => 'atmosphere',
+            'attributes' => [
+                'atmosphere' => $this->atmosphere,
+                'datetime' => $this->created_at,
+            ],
+        ];
     }
 }

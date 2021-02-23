@@ -52,11 +52,8 @@
                     "400": {
                         "description": "Bad Request"
                     },
-                    "401": {
-                        "description": "Unauthenticated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
+                    "404": {
+                        "description": "Unknown Client"
                     }
                 }
             }
@@ -95,9 +92,6 @@
                     },
                     "401": {
                         "description": "Unauthenticated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
                     }
                 },
                 "security": [
@@ -156,6 +150,9 @@
                                 "properties": {
                                     "atmosphere": {
                                         "$ref": "#/components/schemas/Submission/properties/atmosphere"
+                                    },
+                                    "datetime": {
+                                        "$ref": "#/components/schemas/Submission/properties/created_at"
                                     }
                                 },
                                 "type": "object"
