@@ -55,7 +55,12 @@
                     "404": {
                         "description": "Unknown Client"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "clientSecret": []
+                    }
+                ]
             }
         },
         "/submission": {
@@ -141,21 +146,16 @@
             },
             "AtmosphereResource": {
                 "properties": {
-                    "data": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "attributes": {
                         "properties": {
-                            "type": {
-                                "type": "string"
+                            "atmosphere": {
+                                "$ref": "#/components/schemas/Submission/properties/atmosphere"
                             },
-                            "attributes": {
-                                "properties": {
-                                    "atmosphere": {
-                                        "$ref": "#/components/schemas/Submission/properties/atmosphere"
-                                    },
-                                    "datetime": {
-                                        "$ref": "#/components/schemas/Submission/properties/created_at"
-                                    }
-                                },
-                                "type": "object"
+                            "datetime": {
+                                "$ref": "#/components/schemas/Submission/properties/created_at"
                             }
                         },
                         "type": "object"
@@ -166,38 +166,82 @@
                     "name": "AtmosphereResource"
                 }
             },
+            "ClientResource": {
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "$ref": "#/components/schemas/Client/properties/id"
+                    },
+                    "attributes": {
+                        "properties": {
+                            "name": {
+                                "$ref": "#/components/schemas/Client/properties/name"
+                            },
+                            "urlkey": {
+                                "$ref": "#/components/schemas/Client/properties/urlkey"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "meta": {
+                        "properties": {
+                            "created_at": {
+                                "$ref": "#/components/schemas/Client/properties/created_at"
+                            },
+                            "updated_at": {
+                                "$ref": "#/components/schemas/Client/properties/updated_at"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "ClientResource"
+                }
+            },
             "SubmissionResource": {
                 "properties": {
-                    "data": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "$ref": "#/components/schemas/Submission/properties/id"
+                    },
+                    "attributes": {
                         "properties": {
-                            "type": {
-                                "type": "string"
+                            "atmosphere": {
+                                "$ref": "#/components/schemas/Submission/properties/atmosphere"
                             },
-                            "id": {
-                                "$ref": "#/components/schemas/Submission/properties/id"
+                            "direction": {
+                                "$ref": "#/components/schemas/Submission/properties/direction"
                             },
-                            "attributes": {
-                                "properties": {
-                                    "atmosphere": {
-                                        "$ref": "#/components/schemas/Submission/properties/atmosphere"
-                                    },
-                                    "direction": {
-                                        "$ref": "#/components/schemas/Submission/properties/direction"
-                                    },
-                                    "comment": {
-                                        "$ref": "#/components/schemas/Submission/properties/comment"
-                                    },
-                                    "abandoned": {
-                                        "$ref": "#/components/schemas/Submission/properties/abandoned"
-                                    },
-                                    "created_at": {
-                                        "$ref": "#/components/schemas/Submission/properties/created_at"
-                                    },
-                                    "updated_at": {
-                                        "$ref": "#/components/schemas/Submission/properties/updated_at"
-                                    }
-                                },
-                                "type": "object"
+                            "comment": {
+                                "$ref": "#/components/schemas/Submission/properties/comment"
+                            },
+                            "abandoned": {
+                                "$ref": "#/components/schemas/Submission/properties/abandoned"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "relationships": {
+                        "properties": {
+                            "client": {
+                                "$ref": "#/components/schemas/ClientResource"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "meta": {
+                        "properties": {
+                            "created_at": {
+                                "$ref": "#/components/schemas/Submission/properties/created_at"
+                            },
+                            "updated_at": {
+                                "$ref": "#/components/schemas/Submission/properties/updated_at"
                             }
                         },
                         "type": "object"
@@ -206,6 +250,61 @@
                 "type": "object",
                 "xml": {
                     "name": "SubmissionResource"
+                }
+            },
+            "Client": {
+                "title": "Client Model",
+                "description": "Client Model",
+                "required": [
+                    "name",
+                    "secret",
+                    "urlkey"
+                ],
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "description": "Client ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "title": "name",
+                        "description": "The name of the ward"
+                    },
+                    "secret": {
+                        "title": "secret",
+                        "description": "The string used to validate each ward (client)"
+                    },
+                    "urlkey": {
+                        "title": "urlkey",
+                        "description": "The string used to identify each ward (client)"
+                    },
+                    "created_at": {
+                        "title": "created_at",
+                        "description": "Model Creation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": "true"
+                    },
+                    "updated_at": {
+                        "title": "updated_at",
+                        "description": "Model Updated timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": "true"
+                    },
+                    "deleted_at": {
+                        "title": "deleted_at",
+                        "description": "Model Deleted timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": "true"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Client"
                 }
             },
             "Submission": {
@@ -222,10 +321,6 @@
                         "type": "integer",
                         "format": "int64",
                         "example": 1
-                    },
-                    "secret": {
-                        "title": "secret",
-                        "description": "The string used to identify each ward (client)"
                     },
                     "atmosphere": {
                         "title": "atmosphere",
@@ -283,9 +378,9 @@
             }
         },
         "securitySchemes": {
-            "clientSecret": {
+            "Bearer Token": {
                 "type": "apiKey",
-                "name": "X-CLIENT-SECRET",
+                "name": "AUTHORIZATION",
                 "in": "header"
             }
         }

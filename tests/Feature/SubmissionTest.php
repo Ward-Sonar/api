@@ -100,6 +100,8 @@ class SubmissionTest extends TestCase
             ]
         );
 
+        dump($response->json());
+
         $response->assertStatus(201);
     }
 

@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSubmissionRequest;
+use App\Http\Resources\SubmissionResource;
+use App\Models\Client;
+use App\Models\Submission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class SubmissionController extends Controller
 {
@@ -40,8 +45,12 @@ class SubmissionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function __invoke(Request $request)
+    public function __invoke(StoreSubmissionRequest $request)
     {
-        //
+        $secret = Str::substr($request->header('AUTHORIZATION'), 7);
+        $client = Client::where('secret', '=', hash('sha256', $secret))->first();
+        $submission = $client->submissions()->create($request->validated()['data']['attributes']);
+
+        return new SubmissionResource($submission);
     }
 }

@@ -10,23 +10,19 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *         name="AtmosphereResource"
  *     ),
  *     @OA\Property(
- *         property="data",
+ *         property="type",
+ *         type="string"
+ *     ),
+ *     @OA\Property(
+ *         property="attributes",
  *         type="object",
  *         @OA\Property(
- *             property="type",
- *             type="string"
+ *             property="atmosphere",
+ *             ref="#/components/schemas/Submission/properties/atmosphere"
  *         ),
  *         @OA\Property(
- *             property="attributes",
- *             type="object",
- *             @OA\Property(
- *                 property="atmosphere",
- *                 ref="#/components/schemas/Submission/properties/atmosphere"
- *             ),
- *             @OA\Property(
- *                 property="datetime",
- *                 ref="#/components/schemas/Submission/properties/created_at"
- *             )
+ *             property="datetime",
+ *             ref="#/components/schemas/Submission/properties/created_at"
  *         )
  *     )
  * )

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 /**
  * @OA\Schema(
@@ -53,7 +54,7 @@ class StoreSubmissionRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -65,7 +66,10 @@ class StoreSubmissionRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'data.attributes.atmosphere' => 'nullable|integer|between:-2:2',
+            'data.attributes.direction' => 'nullable|integer|between:-1:1',
+            'data.attributes.comment' => 'nullable|string|max:140',
+            'data.attributes.abandoned' => 'required|boolean',
         ];
     }
 }

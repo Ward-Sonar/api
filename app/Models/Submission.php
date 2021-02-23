@@ -25,12 +25,6 @@ use Illuminate\Database\Eloquent\Model;
  *         example=1
  *     ),
  *
- *      @OA\Property(
- *         property="secret",
- *         title="secret",
- *         description="The string used to identify each ward (client)",
- *     ),
- *
  *     @OA\Property(
  *         property="atmosphere",
  *         title="atmosphere",
@@ -94,6 +88,18 @@ class Submission extends Model
     protected $casts = [
         'atmosphere' => 'integer',
         'direction' => 'integer',
+    ];
+
+    /**
+     * Mass assignable attributes
+     *
+     * @var array
+     **/
+    protected $fillable = [
+        'atmosphere',
+        'direction',
+        'comment',
+        'abandoned',
     ];
 
     /**

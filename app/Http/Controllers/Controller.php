@@ -36,8 +36,8 @@ class Controller extends BaseController
      * @OA\SecurityScheme(
      *     type="apiKey",
      *     in="header",
-     *     securityScheme="clientSecret",
-     *     name="X-CLIENT-SECRET"
+     *     securityScheme="Bearer Token",
+     *     name="AUTHORIZATION"
      * )"
      */
 

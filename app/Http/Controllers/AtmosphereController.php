@@ -39,6 +39,9 @@ class AtmosphereController extends Controller
      *          response=404,
      *          description="Unknown Client",
      *      ),
+     *      security={
+     *         {"clientSecret": {}}
+     *     }
      * )
      *
      * @param  \Illuminate\Http\Request  $request
