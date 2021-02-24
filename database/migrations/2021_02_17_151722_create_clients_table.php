@@ -15,7 +15,7 @@ class CreateClientsTable extends Migration
             $table->id();
             $table->text('name');
             $table->string('secret', 80)->unique()->nullable()->default(null);
-            $table->char('urlkey', 12);
+            $table->char('urlkey', 12)->unique();
             $table->timestamps();
             $table->softDeletes();
         });
