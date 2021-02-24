@@ -42,7 +42,7 @@ class SubmissionController extends Controller
      *     }
      * )
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function __invoke(StoreSubmissionRequest $request)
@@ -50,6 +50,11 @@ class SubmissionController extends Controller
         $secret = Str::substr($request->header('AUTHORIZATION'), 7);
         $client = Client::where('secret', '=', hash('sha256', $secret))->first();
         $submission = $client->submissions()->create($request->validated()['data']['attributes']);
+        $causes = $request->validated()['data']['relationships']['causes'] ?? null;
+        if ($causes) {
+            $submission->causes()->attach($causes);
+        }
+        $submission->load('client');
 
         return new SubmissionResource($submission);
     }

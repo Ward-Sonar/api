@@ -40,7 +40,7 @@ class Handler extends ExceptionHandler
     {
 
         /**
-         * Authentication Exception
+         * Authentication Exception.
          */
         $this->reportable(function (AuthenticationException $e) {
             return response()->json([
@@ -53,7 +53,7 @@ class Handler extends ExceptionHandler
         });
 
         /**
-         * Authorisation Exception
+         * Authorisation Exception.
          */
         $this->reportable(function (AuthorizationException $e) {
             return response()->json([
@@ -66,10 +66,11 @@ class Handler extends ExceptionHandler
         });
 
         /**
-         * Route Not Found Exception
+         * Route Not Found Exception.
          */
         $this->reportable(function (NotFoundHttpException $e) {
             $request = request();
+
             return response()->json([
                 'errors' => [
                     'error' => [
@@ -80,10 +81,11 @@ class Handler extends ExceptionHandler
         });
 
         /**
-         * Method Not Found Exception
+         * Method Not Found Exception.
          */
         $this->reportable(function (MethodNotAllowedHttpException $e) {
             $request = request();
+
             return response()->json([
                 'errors' => [
                     'error' => [
@@ -94,7 +96,7 @@ class Handler extends ExceptionHandler
         });
 
         /**
-         * Model Not Found Exception
+         * Model Not Found Exception.
          */
         $this->reportable(function (ModelNotFoundException $e) {
             return response()->json([
@@ -107,7 +109,7 @@ class Handler extends ExceptionHandler
         });
 
         /**
-         * Asset Not Found Exception
+         * Asset Not Found Exception.
          */
         $this->reportable(function (FileNotFoundException $e) {
             return response()->json([
@@ -120,7 +122,7 @@ class Handler extends ExceptionHandler
         });
 
         /**
-         * Validation Exception
+         * Validation Exception.
          */
         $this->reportable(function (ValidationException $e) {
             return response()->json([
@@ -129,7 +131,7 @@ class Handler extends ExceptionHandler
         });
 
         /**
-         * Database Exception
+         * Database Exception.
          */
         $this->reportable(function (PDOException $e) {
             return response()->json([

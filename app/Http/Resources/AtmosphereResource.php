@@ -10,19 +10,23 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *         name="AtmosphereResource"
  *     ),
  *     @OA\Property(
- *         property="type",
- *         type="string"
- *     ),
- *     @OA\Property(
- *         property="attributes",
+ *         property="data",
  *         type="object",
  *         @OA\Property(
- *             property="atmosphere",
- *             ref="#/components/schemas/Submission/properties/atmosphere"
+ *             property="type",
+ *             type="string"
  *         ),
  *         @OA\Property(
- *             property="datetime",
- *             ref="#/components/schemas/Submission/properties/created_at"
+ *             property="attributes",
+ *             type="object",
+ *             @OA\Property(
+ *                 property="atmosphere",
+ *                 ref="#/components/schemas/Submission/properties/atmosphere"
+ *             ),
+ *             @OA\Property(
+ *                 property="datetime",
+ *                 ref="#/components/schemas/Submission/properties/created_at"
+ *             )
  *         )
  *     )
  * )
@@ -32,7 +36,7 @@ class AtmosphereResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function toArray($request)

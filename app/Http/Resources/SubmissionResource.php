@@ -10,53 +10,80 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *         name="SubmissionResource"
  *     ),
  *     @OA\Property(
- *         property="type",
- *         type="string"
- *     ),
- *     @OA\Property(
- *          property="id",
- *          ref="#/components/schemas/Submission/properties/id"
- *     ),
- *     @OA\Property(
- *         property="attributes",
+ *         property="data",
  *         type="object",
  *         @OA\Property(
- *              property="atmosphere",
- *              ref="#/components/schemas/Submission/properties/atmosphere"
- *          ),
+ *             property="type",
+ *             type="string"
+ *         ),
  *         @OA\Property(
- *              property="direction",
- *              ref="#/components/schemas/Submission/properties/direction"
- *          ),
+ *              property="id",
+ *              ref="#/components/schemas/Submission/properties/id"
+ *         ),
  *         @OA\Property(
- *              property="comment",
- *              ref="#/components/schemas/Submission/properties/comment"
- *          ),
+ *             property="attributes",
+ *             type="object",
+ *             @OA\Property(
+ *                  property="atmosphere",
+ *                  ref="#/components/schemas/Submission/properties/atmosphere"
+ *              ),
+ *             @OA\Property(
+ *                  property="direction",
+ *                  ref="#/components/schemas/Submission/properties/direction"
+ *              ),
+ *             @OA\Property(
+ *                  property="comment",
+ *                  ref="#/components/schemas/Submission/properties/comment"
+ *              ),
+ *             @OA\Property(
+ *                  property="abandoned",
+ *                  ref="#/components/schemas/Submission/properties/abandoned"
+ *              ),
+ *         ),
  *         @OA\Property(
- *              property="abandoned",
- *              ref="#/components/schemas/Submission/properties/abandoned"
- *          ),
- *     ),
- *     @OA\Property(
- *         property="relationships",
- *         type="object",
+ *             property="relationships",
+ *             type="object",
+ *             @OA\Property(
+ *                  property="client",
+ *                  type="object",
+ *                  @OA\Property(
+ *                      property="type",
+ *                      type="string"
+ *                  ),
+ *                  @OA\Property(
+ *                      property="id",
+ *                      ref="#/components/schemas/Client/properties/id"
+ *                  ),
+ *             ),
+ *             @OA\Property(
+ *                  property="causes",
+ *                  type="array",
+ *                  @OA\Items(
+ *                      type="object",
+ *                      @OA\Property(
+ *                          property="type",
+ *                          type="string"
+ *                      ),
+ *                      @OA\Property(
+ *                          property="id",
+ *                          ref="#/components/schemas/Cause/properties/id"
+ *                      ),
+ *                  )
+ *             )
+ *         ),
  *         @OA\Property(
- *              property="client",
- *              ref="#/components/schemas/ClientResource"
- *          ),
- *     ),
- *     @OA\Property(
- *         property="meta",
- *         type="object",
- *         @OA\Property(
- *              property="created_at",
- *              ref="#/components/schemas/Submission/properties/created_at"
- *          ),
- *         @OA\Property(
- *              property="updated_at",
- *              ref="#/components/schemas/Submission/properties/updated_at"
+ *             property="meta",
+ *             type="object",
+ *             @OA\Property(
+ *                  property="created_at",
+ *                  ref="#/components/schemas/Submission/properties/created_at"
+ *              ),
+ *             @OA\Property(
+ *                  property="updated_at",
+ *                  ref="#/components/schemas/Submission/properties/updated_at"
+ *              )
  *          )
- *      )
+ *     )
  * )
  */
 class SubmissionResource extends JsonResource
@@ -64,7 +91,7 @@ class SubmissionResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function toArray($request)
@@ -79,8 +106,29 @@ class SubmissionResource extends JsonResource
                 'abandoned' => $this->abandoned,
             ],
             'relationships' => [
-                'client' => new ClientResource($this->client),
+                'client' => $this->whenLoaded('client', [
+                    'type' => 'client',
+                    'id' => $this->client_id,
+                ]),
+                'causes' => $this->causes->map(function ($cause) {
+                    return [
+                        'type' => 'cause',
+                        'id' => $cause->id,
+                    ];
+                }),
             ],
+        ];
+    }
+
+    /**
+     * Get additional data that should be returned with the resource array.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function with($request)
+    {
+        return [
             'meta' => [
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at,

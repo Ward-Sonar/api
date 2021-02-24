@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Cause;
 use App\Models\Client;
 use Illuminate\Support\Str;
 use Osteel\OpenApi\Testing\ResponseValidatorBuilder;
@@ -45,6 +46,7 @@ class SubmissionTest extends TestCase
             '/api/' . $this->version . '/submission',
             [
                 'data' => [
+                    'type' => 'submission',
                     'attributes' => [
                         'abandoned' => true,
                     ],
@@ -66,6 +68,7 @@ class SubmissionTest extends TestCase
             '/api/' . $this->version . '/submission',
             [
                 'data' => [
+                    'type' => 'submission',
                     'attributes' => [
                         'abandoned' => true,
                     ],
@@ -90,6 +93,7 @@ class SubmissionTest extends TestCase
             '/api/' . $this->version . '/submission',
             [
                 'data' => [
+                    'type' => 'submission',
                     'attributes' => [
                         'abandoned' => true,
                     ],
@@ -100,8 +104,6 @@ class SubmissionTest extends TestCase
             ]
         );
 
-        dump($response->json());
-
         $response->assertStatus(201);
     }
 
@@ -110,12 +112,13 @@ class SubmissionTest extends TestCase
      *
      * @return void
      */
-    public function testPostSubmissionMissingData400()
+    public function testPostSubmissionMissingData422()
     {
         $response = $this->postJson(
             '/api/' . $this->version . '/submission',
             [
                 'data' => [
+                    'type' => 'submission',
                     'attributes' => [
                     ],
                 ],
@@ -125,7 +128,7 @@ class SubmissionTest extends TestCase
             ]
         );
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     /**
@@ -133,12 +136,13 @@ class SubmissionTest extends TestCase
      *
      * @return void
      */
-    public function testPostSubmissionBadAtmosphereData400()
+    public function testPostSubmissionBadAtmosphereData422()
     {
         $response = $this->postJson(
             '/api/' . $this->version . '/submission',
             [
                 'data' => [
+                    'type' => 'submission',
                     'attributes' => [
                         'abandoned' => false,
                         'atmosphere' => -3,
@@ -152,12 +156,13 @@ class SubmissionTest extends TestCase
             ]
         );
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response = $this->postJson(
             '/api/' . $this->version . '/submission',
             [
                 'data' => [
+                    'type' => 'submission',
                     'attributes' => [
                         'abandoned' => false,
                         'atmosphere' => 3,
@@ -171,7 +176,7 @@ class SubmissionTest extends TestCase
             ]
         );
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     /**
@@ -179,12 +184,13 @@ class SubmissionTest extends TestCase
      *
      * @return void
      */
-    public function testPostSubmissionBadDirectionData400()
+    public function testPostSubmissionBadDirectionData422()
     {
         $response = $this->postJson(
             '/api/' . $this->version . '/submission',
             [
                 'data' => [
+                    'type' => 'submission',
                     'attributes' => [
                         'abandoned' => false,
                         'atmosphere' => 0,
@@ -198,12 +204,13 @@ class SubmissionTest extends TestCase
             ]
         );
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response = $this->postJson(
             '/api/' . $this->version . '/submission',
             [
                 'data' => [
+                    'type' => 'submission',
                     'attributes' => [
                         'abandoned' => false,
                         'atmosphere' => 0,
@@ -217,7 +224,7 @@ class SubmissionTest extends TestCase
             ]
         );
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     /**
@@ -231,6 +238,7 @@ class SubmissionTest extends TestCase
             '/api/' . $this->version . '/submission',
             [
                 'data' => [
+                    'type' => 'submission',
                     'attributes' => [
                         'abandoned' => false,
                         'atmosphere' => -1,
@@ -247,11 +255,95 @@ class SubmissionTest extends TestCase
         $response->assertStatus(201);
 
         $this->assertDatabaseHas('submissions', [
-            'id' => $client->id,
+            'id' => $this->client->id,
             'abandoned' => false,
             'atmosphere' => -1,
             'direction' => 0,
             'comment' => 'this is a comment',
+        ]);
+
+        $validator = ResponseValidatorBuilder::fromJson(storage_path('api-docs/api-docs.json'))->getValidator();
+
+        $result = $validator->validate('/api/' . $this->version . '/submission', 'post', $response->baseResponse);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Causes assigned to the submission must be valid
+     *
+     * @return void
+     */
+    public function testPostSubmissionWithInvalidCauses422()
+    {
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'type' => 'submission',
+                    'attributes' => [
+                        'abandoned' => false,
+                        'atmosphere' => -1,
+                        'direction' => 0,
+                        'comment' => 'this is a comment',
+                    ],
+                    'relationships' => [
+                        'causes' => [1, 2, 3],
+                    ],
+                ],
+            ],
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
+
+        $response->assertStatus(422);
+    }
+
+    /**
+     * Valid causes can be assigned to a submission
+     *
+     * @return void
+     */
+    public function testPostSubmissionWithValidCauses201()
+    {
+        $causes = Cause::factory()->count(3)->create();
+        $response = $this->postJson(
+            '/api/' . $this->version . '/submission',
+            [
+                'data' => [
+                    'type' => 'submission',
+                    'attributes' => [
+                        'abandoned' => false,
+                        'atmosphere' => -1,
+                        'direction' => 0,
+                        'comment' => 'this is a comment',
+                    ],
+                    'relationships' => [
+                        'causes' => $causes->pluck('id'),
+                    ],
+                ],
+            ],
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
+
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('cause_submission', [
+            'submission_id' => $response->json('data')['id'],
+            'cause_id' => $causes->get(0)->id,
+        ]);
+
+        $this->assertDatabaseHas('cause_submission', [
+            'submission_id' => $response->json('data')['id'],
+            'cause_id' => $causes->get(1)->id,
+        ]);
+
+        $this->assertDatabaseHas('cause_submission', [
+            'submission_id' => $response->json('data')['id'],
+            'cause_id' => $causes->get(2)->id,
         ]);
 
         $validator = ResponseValidatorBuilder::fromJson(storage_path('api-docs/api-docs.json'))->getValidator();

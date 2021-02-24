@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Cause;
-use App\Models\Client;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -81,20 +79,20 @@ class Submission extends Model
     use HasFactory;
 
     /**
-     * Attributes to be cast
+     * Attributes to be cast.
      *
      * @var array
-     **/
+     */
     protected $casts = [
         'atmosphere' => 'integer',
         'direction' => 'integer',
     ];
 
     /**
-     * Mass assignable attributes
+     * Mass assignable attributes.
      *
      * @var array
-     **/
+     */
     protected $fillable = [
         'atmosphere',
         'direction',
@@ -103,20 +101,20 @@ class Submission extends Model
     ];
 
     /**
-     * The client that this submission belongs to
+     * The client that this submission belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     **/
+     */
     public function client()
     {
         return $this->belongsTo(Client::class);
     }
 
     /**
-     * The causes that belong to this submission
+     * The causes that belong to this submission.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     **/
+     */
     public function causes()
     {
         return $this->belongsToMany(Cause::class);

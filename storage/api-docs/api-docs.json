@@ -146,16 +146,21 @@
             },
             "AtmosphereResource": {
                 "properties": {
-                    "type": {
-                        "type": "string"
-                    },
-                    "attributes": {
+                    "data": {
                         "properties": {
-                            "atmosphere": {
-                                "$ref": "#/components/schemas/Submission/properties/atmosphere"
+                            "type": {
+                                "type": "string"
                             },
-                            "datetime": {
-                                "$ref": "#/components/schemas/Submission/properties/created_at"
+                            "attributes": {
+                                "properties": {
+                                    "atmosphere": {
+                                        "$ref": "#/components/schemas/Submission/properties/atmosphere"
+                                    },
+                                    "datetime": {
+                                        "$ref": "#/components/schemas/Submission/properties/created_at"
+                                    }
+                                },
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -168,30 +173,35 @@
             },
             "ClientResource": {
                 "properties": {
-                    "type": {
-                        "type": "string"
-                    },
-                    "id": {
-                        "$ref": "#/components/schemas/Client/properties/id"
-                    },
-                    "attributes": {
+                    "data": {
                         "properties": {
-                            "name": {
-                                "$ref": "#/components/schemas/Client/properties/name"
+                            "type": {
+                                "type": "string"
                             },
-                            "urlkey": {
-                                "$ref": "#/components/schemas/Client/properties/urlkey"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    "meta": {
-                        "properties": {
-                            "created_at": {
-                                "$ref": "#/components/schemas/Client/properties/created_at"
+                            "id": {
+                                "$ref": "#/components/schemas/Client/properties/id"
                             },
-                            "updated_at": {
-                                "$ref": "#/components/schemas/Client/properties/updated_at"
+                            "attributes": {
+                                "properties": {
+                                    "name": {
+                                        "$ref": "#/components/schemas/Client/properties/name"
+                                    },
+                                    "urlkey": {
+                                        "$ref": "#/components/schemas/Client/properties/urlkey"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "meta": {
+                                "properties": {
+                                    "created_at": {
+                                        "$ref": "#/components/schemas/Client/properties/created_at"
+                                    },
+                                    "updated_at": {
+                                        "$ref": "#/components/schemas/Client/properties/updated_at"
+                                    }
+                                },
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -204,44 +214,71 @@
             },
             "SubmissionResource": {
                 "properties": {
-                    "type": {
-                        "type": "string"
-                    },
-                    "id": {
-                        "$ref": "#/components/schemas/Submission/properties/id"
-                    },
-                    "attributes": {
+                    "data": {
                         "properties": {
-                            "atmosphere": {
-                                "$ref": "#/components/schemas/Submission/properties/atmosphere"
+                            "type": {
+                                "type": "string"
                             },
-                            "direction": {
-                                "$ref": "#/components/schemas/Submission/properties/direction"
+                            "id": {
+                                "$ref": "#/components/schemas/Submission/properties/id"
                             },
-                            "comment": {
-                                "$ref": "#/components/schemas/Submission/properties/comment"
+                            "attributes": {
+                                "properties": {
+                                    "atmosphere": {
+                                        "$ref": "#/components/schemas/Submission/properties/atmosphere"
+                                    },
+                                    "direction": {
+                                        "$ref": "#/components/schemas/Submission/properties/direction"
+                                    },
+                                    "comment": {
+                                        "$ref": "#/components/schemas/Submission/properties/comment"
+                                    },
+                                    "abandoned": {
+                                        "$ref": "#/components/schemas/Submission/properties/abandoned"
+                                    }
+                                },
+                                "type": "object"
                             },
-                            "abandoned": {
-                                "$ref": "#/components/schemas/Submission/properties/abandoned"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    "relationships": {
-                        "properties": {
-                            "client": {
-                                "$ref": "#/components/schemas/ClientResource"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    "meta": {
-                        "properties": {
-                            "created_at": {
-                                "$ref": "#/components/schemas/Submission/properties/created_at"
+                            "relationships": {
+                                "properties": {
+                                    "client": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "$ref": "#/components/schemas/Client/properties/id"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "causes": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "$ref": "#/components/schemas/Cause/properties/id"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
                             },
-                            "updated_at": {
-                                "$ref": "#/components/schemas/Submission/properties/updated_at"
+                            "meta": {
+                                "properties": {
+                                    "created_at": {
+                                        "$ref": "#/components/schemas/Submission/properties/created_at"
+                                    },
+                                    "updated_at": {
+                                        "$ref": "#/components/schemas/Submission/properties/updated_at"
+                                    }
+                                },
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -250,6 +287,51 @@
                 "type": "object",
                 "xml": {
                     "name": "SubmissionResource"
+                }
+            },
+            "Cause": {
+                "title": "Cause Model",
+                "description": "Cause Model",
+                "required": [
+                    "text"
+                ],
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "description": "Cause ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "text": {
+                        "title": "text",
+                        "description": "Description of cause"
+                    },
+                    "created_at": {
+                        "title": "created_at",
+                        "description": "Model Creation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": "true"
+                    },
+                    "updated_at": {
+                        "title": "updated_at",
+                        "description": "Model Updated timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": "true"
+                    },
+                    "deleted_at": {
+                        "title": "deleted_at",
+                        "description": "Model Deleted timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": "true"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Cause"
                 }
             },
             "Client": {

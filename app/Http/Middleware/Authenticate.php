@@ -10,9 +10,8 @@ class Authenticate extends Middleware
     /**
      * Handle an unauthenticated client.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  array  $guards
-     * @return void
+     * @param \Illuminate\Http\Request $request
+     * @param array $guards
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */

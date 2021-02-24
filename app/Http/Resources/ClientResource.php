@@ -10,37 +10,41 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *         name="ClientResource"
  *     ),
  *     @OA\Property(
- *         property="type",
- *         type="string"
- *     ),
- *     @OA\Property(
- *          property="id",
- *          ref="#/components/schemas/Client/properties/id"
- *     ),
- *     @OA\Property(
- *         property="attributes",
+ *         property="data",
  *         type="object",
  *         @OA\Property(
- *              property="name",
- *              ref="#/components/schemas/Client/properties/name"
- *          ),
+ *             property="type",
+ *             type="string"
+ *         ),
  *         @OA\Property(
- *              property="urlkey",
- *              ref="#/components/schemas/Client/properties/urlkey"
- *          ),
- *     ),
- *     @OA\Property(
- *         property="meta",
- *         type="object",
+ *              property="id",
+ *              ref="#/components/schemas/Client/properties/id"
+ *         ),
  *         @OA\Property(
- *              property="created_at",
- *              ref="#/components/schemas/Client/properties/created_at"
- *          ),
+ *             property="attributes",
+ *             type="object",
+ *             @OA\Property(
+ *                  property="name",
+ *                  ref="#/components/schemas/Client/properties/name"
+ *              ),
+ *             @OA\Property(
+ *                  property="urlkey",
+ *                  ref="#/components/schemas/Client/properties/urlkey"
+ *              ),
+ *         ),
  *         @OA\Property(
- *              property="updated_at",
- *              ref="#/components/schemas/Client/properties/updated_at"
+ *             property="meta",
+ *             type="object",
+ *             @OA\Property(
+ *                  property="created_at",
+ *                  ref="#/components/schemas/Client/properties/created_at"
+ *              ),
+ *             @OA\Property(
+ *                  property="updated_at",
+ *                  ref="#/components/schemas/Client/properties/updated_at"
+ *              )
  *          )
- *      )
+ *     )
  * )
  */
 class ClientResource extends JsonResource
@@ -48,7 +52,7 @@ class ClientResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function toArray($request)
@@ -60,6 +64,18 @@ class ClientResource extends JsonResource
                 'name' => $this->name,
                 'urlkey' => $this->urlkey,
             ],
+        ];
+    }
+
+    /**
+     * Get additional data that should be returned with the resource array.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function with($request)
+    {
+        return [
             'meta' => [
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at,

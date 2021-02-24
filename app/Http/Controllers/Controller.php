@@ -40,7 +40,6 @@ class Controller extends BaseController
      *     name="AUTHORIZATION"
      * )"
      */
-
     use AuthorizesRequests;
     use DispatchesJobs;
     use ValidatesRequests;

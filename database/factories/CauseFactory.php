@@ -22,7 +22,7 @@ class CauseFactory extends Factory
     public function definition()
     {
         return [
-            'text' => $this->faker->sentence(),
+            'text' => $this->faker->sentence(3),
         ];
     }
 }
