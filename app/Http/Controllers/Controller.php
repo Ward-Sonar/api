@@ -32,8 +32,14 @@ class Controller extends BaseController
      *     name="WardSonar",
      *     description="API Endpoints for wardsonar.co.uk",
      * )
+     *
+     * @OA\SecurityScheme(
+     *     type="apiKey",
+     *     in="header",
+     *     securityScheme="Bearer Token",
+     *     name="AUTHORIZATION"
+     * )"
      */
-
     use AuthorizesRequests;
     use DispatchesJobs;
     use ValidatesRequests;

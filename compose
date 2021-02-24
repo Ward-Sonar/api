@@ -31,6 +31,15 @@ if [ $# -gt 0 ];then
             app \
             php artisan "$@"
 
+    # If "bash" is used, open a shell
+    # inside a new container
+    elif [ "$1" == "bash" ]; then
+        shift 1
+        $COMPOSE run --rm ${TTY} \
+            -w /var/www/html \
+            app \
+            bash "$@"
+
     # If "composer" is used, pass-thru to "composer"
     # inside a new container
     elif [ "$1" == "composer" ]; then
@@ -48,6 +57,7 @@ if [ $# -gt 0 ];then
             -w /var/www/html \
             app \
             vendor/bin/phpunit "$@"
+
     # If "style" is used, run PHP CS Fixer,
     # pass-thru any extra arguments to php-cs-fixer
     elif [ "$1" == "style" ]; then
@@ -56,6 +66,16 @@ if [ $# -gt 0 ];then
             -w /var/www/html \
             app \
             vendor/bin/php-cs-fixer fix --config=.php_cs --allow-risky=yes --verbose "$@"
+
+    # If "docs" is used, run swagger open-api docs
+    # inside a new container
+    elif [ "$1" == "docs" ]; then
+        shift 1
+        $COMPOSE run --rm ${TTY} \
+            -w /var/www/html \
+            app \
+            php artisan l5-swagger:generate "$@"
+
     # If "deploy" is used, run deploy script,
     # pass-thru any extra arguments to deploy script
     elif [ "$1" == "deploy" ]; then

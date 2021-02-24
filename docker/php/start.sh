@@ -20,6 +20,7 @@ chmod -R ugo+rw /.composer
 if [ $# -gt 0 ]; then
     if [ "$CONTAINER_ENV" == "local" ]; then
         echo "Running $@ as www-data"
+        export XDG_CONFIG_HOME=${PWD}
         # If we passed a command, run it instead
         exec gosu www-data "$@"
     else

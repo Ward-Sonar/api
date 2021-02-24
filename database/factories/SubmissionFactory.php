@@ -25,7 +25,7 @@ class SubmissionFactory extends Factory
             'atmosphere' => $this->faker->numberBetween(-2, 2),
             'direction' => $this->faker->numberBetween(-1, 1),
             'abandoned' => $this->faker->boolean(),
-            'comment' => $this->faker->text($this->faker->numberBetween(1, 200)),
+            'comment' => $this->faker->text($this->faker->numberBetween(5, 200)),
         ];
     }
 }
