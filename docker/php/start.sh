@@ -8,9 +8,9 @@ if [ ! -z "$WWWUID" ]; then
 fi
 
 # Ensure /.composer exists and is writable
-if [ ! -d /.composer ]; then
+if [ ! -d ${PWD}/.composer ]; then
     echo "Create .composer directory in $PWD"
-    mkdir /.composer
+    mkdir ${PWD}/.composer
     export COMPOSER_HOME=${PWD}/.composer
 fi
 
@@ -27,6 +27,19 @@ if [ $# -gt 0 ]; then
         exec "$@"
     fi
 else
-    # Otherwise start supervisord
+    # Otherwise start the application
+    if [ "$CONTAINER_ENV" != "local" ]; then
+        echo "Install dependencies.."
+        composer install
+
+        echo "Run migrations..."
+        php /var/www/html/artisan migrate --force
+
+        echo "Cache config and routes..."
+        php /var/www/html/artisan config:cache
+        php /var/www/html/artisan route:cache
+    fi
+
+    echo "Run supervisor"
     /usr/bin/supervisord
 fi
