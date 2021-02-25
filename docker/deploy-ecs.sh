@@ -75,7 +75,7 @@ else
 fi
 
 echo "Build the app image..."
-docker build -t  ${AWS_DOCKER_REPO} ${PWD}/docker/php
+docker build -t ${AWS_DOCKER_REPO} ./docker
 
 echo "Tag the app image"
 docker tag "$AWS_DOCKER_REPO:latest" "$REPO_URI:latest"
