@@ -22,6 +22,7 @@ export ENV_SECRET_ID="${DEPLOY_ENV}.api.env"
 if ! command -v aws &> /dev/null; then
     echo "Installing AWS CLI..."
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    rm -rf ./aws-tmp
     unzip awscliv2.zip -d aws-tmp
     sudo ./aws-tmp/aws/install
     echo `aws --version`
@@ -42,7 +43,7 @@ EOF
 fi
 
 # Get the .env file.
-echo "Downloading .env file..."
+echo "Downloading .env file... $AWS_IAM_ROLE_ARN"
 if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
     SECRET=`aws secretsmanager get-secret-value \
         --profile accessrole \
@@ -66,6 +67,10 @@ IFS='/'
 read AWS_DOCKER_REGISTRY AWS_DOCKER_REPO <<< "${REPO_URI}"
 IFS=$OLD_IFS
 
+echo "REPO_URI $REPO_URI"
+echo "AWS_DOCKER_REGISTRY $AWS_DOCKER_REGISTRY"
+echo "AWS_IAM_ROLE_ARN $AWS_IAM_ROLE_ARN"
+
 # Retrieve an authentication token and authenticate Docker client to project registry.
 echo "Logging in to ECR docker registry..."
 if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
@@ -74,11 +79,13 @@ else
     aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_DOCKER_REGISTRY}
 fi
 
-echo "Build the app image..."
+docker context use default
+
+# echo "Build the app image..."
 docker build -t ${AWS_DOCKER_REPO} ./docker
 
-echo "Tag the app image"
+# echo "Tag the app image"
 docker tag "$AWS_DOCKER_REPO:latest" "$REPO_URI:latest"
 
-echo "Push the tagged image to the repo..."
+# echo "Push the tagged image to the repo..."
 docker push "$REPO_URI:latest"

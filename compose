@@ -3,6 +3,7 @@
 # Set environment variables for dev
 export APP_ENV=${APP_ENV:-local}
 export APP_PORT=${APP_PORT:-80}
+export APP_USER_ID=${APP_USER_ID:-1000}
 export DB_ROOT_PASS=${DB_ROOT_PASS:-root}
 export DB_NAME=${DB_NAME:-wardsonar}
 export DB_USER=${DB_USER:-wardsonar}
