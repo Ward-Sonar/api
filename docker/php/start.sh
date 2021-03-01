@@ -28,5 +28,19 @@ if [ $# -gt 0 ]; then
     fi
 else
     # Otherwise start supervisord
-    /usr/bin/supervisord
+
+    echo "Install dependencies.."
+    composer install
+
+    echo "Run migrations..."
+    php /var/www/html/artisan migrate --force
+
+    echo "Cache config and routes..."
+    php /var/www/html/artisan config:cache
+    php /var/www/html/artisan route:cache
+
+    echo "Run supervisor"
+    /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+    supervisorctl status
 fi
