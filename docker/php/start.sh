@@ -39,6 +39,9 @@ else
     php /var/www/html/artisan config:cache
     php /var/www/html/artisan route:cache
 
+    echo "generate the application key"
+    php /var/www/html/artisan key:generate --force
+
     echo "Run supervisor"
     /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 
