@@ -39,5 +39,8 @@ else
     php /var/www/html/artisan config:cache
     php /var/www/html/artisan route:cache
 
-    /usr/bin/supervisord
+    echo "Run supervisor"
+    /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+    supervisorctl status
 fi
