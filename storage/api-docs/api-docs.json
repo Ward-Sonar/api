@@ -14,8 +14,16 @@
     },
     "servers": [
         {
-            "url": "http://my-default-host.com",
-            "description": ""
+            "url": "http://0.0.0.0/api/v1/",
+            "description": "Development Server"
+        },
+        {
+            "url": "https://api.staging.wardsonar.co.uk/api/v1/",
+            "description": "Staging Server"
+        },
+        {
+            "url": "https://api.wardsonar.co.uk/api/v1/",
+            "description": "Production Server"
         }
     ],
     "paths": {
@@ -134,6 +142,18 @@
                                     },
                                     "abandoned": {
                                         "$ref": "#/components/schemas/Submission/properties/abandoned"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "relationships": {
+                                "properties": {
+                                    "causes": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        }
                                     }
                                 },
                                 "type": "object"

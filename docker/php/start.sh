@@ -27,18 +27,20 @@ if [ $# -gt 0 ]; then
         exec "$@"
     fi
 else
-    # Otherwise start the application
-    if [ "$CONTAINER_ENV" != "local" ]; then
-        echo "Install dependencies.."
-        composer install
+    # Otherwise start supervisord
 
-        echo "Run migrations..."
-        php /var/www/html/artisan migrate --force
+    echo "Install dependencies.."
+    composer install
 
-        echo "Cache config and routes..."
-        php /var/www/html/artisan config:cache
-        php /var/www/html/artisan route:cache
-    fi
+    echo "Run migrations..."
+    php /var/www/html/artisan migrate --force
+
+    echo "Cache config and routes..."
+    php /var/www/html/artisan config:cache
+    php /var/www/html/artisan route:cache
+
+    echo "generate the application key"
+    php /var/www/html/artisan key:generate --force
 
     echo "Run supervisor"
     /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use PDOException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class Handler extends ExceptionHandler
 {
@@ -63,6 +64,25 @@ class Handler extends ExceptionHandler
                     ],
                 ],
             ], 403);
+        });
+
+        /**
+         * Route Not Found Exception.
+         */
+        $this->reportable(function (RouteNotFoundException $e) {
+            $request = request();
+
+            if (!$request->wantsJson()) {
+                return response('Accept header must equal application/json header.', 406);
+            }
+
+            return response()->json([
+                'errors' => [
+                    'error' => [
+                        'message' => 'Route ' . $request->method() . ' to ' . $request->path() . ' not found: ' . $e->getMessage(),
+                    ],
+                ],
+            ], 404);
         });
 
         /**
