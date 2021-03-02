@@ -2,14 +2,12 @@
 
 # Requires the following environment variables:
 # $DEPLOY_ENV = The environment (production/staging).
-# $REPO_URI = The URI of the ECR repo to push to.
-# $CLUSTER = The name of the ECS cluster to deploy to.
+# $REPO_URI_${DEPLOY_ENV} = The URI of the ECR repo to push to, e.g. REPO_URI_STAGING.
+# $CLUSTER_${DEPLOY_ENV} = The name of the ECS cluster to deploy to, e.g. CLUSTER_STAGING.
 # $AWS_ACCESS_KEY_ID = The AWS access key.
 # $AWS_SECRET_ACCESS_KEY = The AWS secret access key.
 # $AWS_DEFAULT_REGION = The AWS region.
 # $AWS_IAM_ROLE_ARN = The ARN of an access role to access aws as [optional]
-# $TRAVIS_BUILD_DIR = The directory of the project.
-# $TRAVIS_COMMIT = The commit hash of the build.
 
 # Bail out on first error.
 set -e
@@ -17,6 +15,7 @@ set -e
 # Set environment variables.
 echo "Setting deployment configuration for ${DEPLOY_ENV}..."
 export ENV_SECRET_ID="${DEPLOY_ENV}.api.env"
+export SERVICE="api"
 
 # Install AWS-CLI
 if ! command -v aws &> /dev/null; then
@@ -43,17 +42,25 @@ EOF
 fi
 
 # Get the .env file.
-echo "Downloading .env file... $AWS_IAM_ROLE_ARN"
 if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
+    echo "Creating .env file from secret: $ENV_SECRET_ID as IAM Role: $AWS_IAM_ROLE_ARN"
     SECRET=`aws secretsmanager get-secret-value \
         --profile accessrole \
         --secret-id ${ENV_SECRET_ID}`
 else
+    echo "Creating .env file from secret: $ENV_SECRET_ID"
     SECRET=`aws secretsmanager get-secret-value \
         --secret-id ${ENV_SECRET_ID}`
 fi
 
 echo $SECRET | python -c "import json,sys;obj=json.load(sys.stdin);print obj['SecretString'];" > .env
+
+# Create the working directory archive to import into the final build
+cd ${TRAVIS_BUILD_DIR}
+composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+git archive -o docker/app.tar --worktree-attributes ${TRAVIS_COMMIT}
+tar -rf docker/app.tar .env vendor
+
 
 # Set the deploy variables based on the environment
 
@@ -70,12 +77,14 @@ IFS=$OLD_IFS
 echo "REPO_URI $REPO_URI"
 echo "AWS_DOCKER_REGISTRY $AWS_DOCKER_REGISTRY"
 echo "AWS_IAM_ROLE_ARN $AWS_IAM_ROLE_ARN"
+echo "CLUSTER $CLUSTER"
 
 # Retrieve an authentication token and authenticate Docker client to project registry.
-echo "Logging in to ECR docker registry..."
 if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
+    echo "Logging in to ECR docker registry: $AWS_DOCKER_REGISTRY in region $AWS_DEFAULT_REGION as IAM_Role $AWS_IAM_ROLE_ARN"
     aws ecr get-login-password --profile accessrole --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_DOCKER_REGISTRY}
 else
+    echo "Logging in to ECR docker registry: $AWS_DOCKER_REGISTRY in region $AWS_DEFAULT_REGION"
     aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_DOCKER_REGISTRY}
 fi
 
@@ -89,3 +98,19 @@ docker tag "$AWS_DOCKER_REPO:latest" "$REPO_URI:latest"
 
 # echo "Push the tagged image to the repo..."
 docker push "$REPO_URI:latest"
+
+# Update the service.
+if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
+    echo "Updating the ECS Cluster: $CLUSTER service: $SERVICE as IAM Role: $AWS_IAM_ROLE_ARN"
+    aws ecs update-service \
+        --profile accessrole \
+        --cluster ${CLUSTER} \
+        --service ${SERVICE} \
+        --force-new-deployment
+else
+    echo "Updating the ECS Cluster: $CLUSTER service: $SERVICE"
+    aws ecs update-service \
+        --cluster ${CLUSTER} \
+        --service ${SERVICE} \
+        --force-new-deployment
+fi

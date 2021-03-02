@@ -29,25 +29,6 @@ if [ $# -gt 0 ]; then
 else
     # Otherwise start the application
     if [ "$CONTAINER_ENV" != "local" ]; then
-        echo "Update supervisord"
-        cat <<EOF > /etc/supervisor/conf.d/supervisord.conf
-[supervisord]
-nodaemon=true
-
-[program:php-fpm]
-command=php-fpm
-stdout_logfile=/dev/stdout
-stdout_logfile_maxbytes=0
-stderr_logfile=/dev/stderr
-stderr_logfile_maxbytes=0
-
-[program:nginx]
-command=nginx
-stdout_logfile=/dev/stdout
-stdout_logfile_maxbytes=0
-stderr_logfile=/dev/stderr
-stderr_logfile_maxbytes=0
-EOF
         echo "Install dependencies.."
         composer install
 
