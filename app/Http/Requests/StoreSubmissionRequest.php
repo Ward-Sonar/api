@@ -40,6 +40,18 @@ use Illuminate\Foundation\Http\FormRequest;
  *                 property="abandoned",
  *                 ref="#/components/schemas/Submission/properties/abandoned"
  *             )
+ *         ),
+ *         @OA\Property(
+ *             property="relationships",
+ *             type="object",
+ *             @OA\Property(
+ *                 property="causes",
+ *                 type="array",
+ *                  @OA\Items(
+ *                      type="integer",
+ *                      format="int64"
+ *                  )
+ *             )
  *         )
  *     )
  * )
