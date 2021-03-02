@@ -61,6 +61,15 @@ class Cause extends Model
     use HasFactory;
 
     /**
+     * Mass assignable attributes.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'text',
+    ];
+
+    /**
      * The submissions that belong to this cause.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

@@ -11,10 +11,10 @@ use Illuminate\Support\Str;
 class SubmissionSeeder extends Seeder
 {
     /**
-     * Causes
+     * Causes.
      *
      * @var array
-     **/
+     */
     protected $causes = [
         1 => 'The staff',
         2 => 'The other patients',
@@ -26,10 +26,10 @@ class SubmissionSeeder extends Seeder
     ];
 
     /**
-     * Demo Submissions data
+     * Demo Submissions data.
      *
      * @var array
-     **/
+     */
     protected $submissions = [
         ['02/02/2021 08:00', -1, 0, 6, 'Supplementary comments 1'],
         ['02/02/2021 08:02', -2, -1, 5, 'Supplementary comments 2'],
