@@ -13,7 +13,9 @@
         },
         "DatabaseName": {
             "Description": "The database name",
-            "Value": "one_hounslow_connect"
+            "Value": {
+                "Ref": "DatabaseName"
+            }
         },
         "DatabasePort": {
             "Description": "The port of the RDS instance",
@@ -26,7 +28,9 @@
         },
         "DatabaseUsername": {
             "Description": "The username for the database",
-            "Value": "one_hounslow_connect"
+            "Value": {
+                "Ref": "DatabaseUserName"
+            }
         },
         "DockerClusterName": {
             "Description": "The name of the Docker cluster",
@@ -148,7 +152,7 @@
             "Type": "List<AWS::EC2::Subnet::Id>"
         },
         "Uuid": {
-            "Default": "35c67694-6a9a-49be-a969-0cec4c1c5dc3",
+            "Default": "aa981cee-c3d3-4461-b95c-f00ca931b87e",
             "Description": "The unique ID for this stack.",
             "MaxLength": "36",
             "MinLength": "36",
@@ -455,7 +459,9 @@
                 "DBInstanceClass": {
                     "Ref": "DatabaseClass"
                 },
-                "DBName": "one_hounslow_connect",
+                "DBName": {
+                    "Ref": "DatabaseName"
+                },
                 "DBSubnetGroupName": {
                     "Ref": "DatabaseSubnetGroup"
                 },
@@ -464,7 +470,9 @@
                 "MasterUserPassword": {
                     "Ref": "DatabasePassword"
                 },
-                "MasterUsername": "one_hounslow_connect",
+                "MasterUsername": {
+                    "Ref": "DatabaseUserName"
+                },
                 "PubliclyAccessible": "false",
                 "VPCSecurityGroups": [
                     {

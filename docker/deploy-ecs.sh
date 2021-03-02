@@ -55,9 +55,15 @@ fi
 
 echo $SECRET | python -c "import json,sys;obj=json.load(sys.stdin);print obj['SecretString'];" > .env
 
+source .env
+
 # Create the working directory archive to import into the final build
-cd ${TRAVIS_BUILD_DIR}
-composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+if [ ${CI} ]; then
+    cd ${TRAVIS_BUILD_DIR}
+    composer install --no-dev --no-interaction --optimize-autoloader
+else
+    TRAVIS_COMMIT=`git rev-parse HEAD`
+fi
 git archive -o docker/app.tar --worktree-attributes ${TRAVIS_COMMIT}
 tar -rf docker/app.tar .env vendor
 
