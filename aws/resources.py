@@ -109,12 +109,12 @@ def create_database_resource(template, database_name_variable, database_allocate
     return template.add_resource(
         rds.DBInstance(
             'Database',
-            DBName=database_name_variable,
+            DBName=Ref(database_name_variable),
             AllocatedStorage=Ref(database_allocated_storage_parameter),
             DBInstanceClass=Ref(database_class_parameter),
             Engine='MySQL',
             EngineVersion='5.7',
-            MasterUsername=database_username_variable,
+            MasterUsername=Ref(database_username_variable),
             MasterUserPassword=Ref(database_password_parameter),
             VPCSecurityGroups=[
                 GetAtt(database_security_group_resource, 'GroupId')],

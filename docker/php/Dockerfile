@@ -66,10 +66,11 @@ ADD opcache-recommended.ini /usr/local/etc/php/conf.d/opcache.ini
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 ADD local.ini /usr/local/etc/php/conf.d/local.ini
 
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.local.conf /etc/supervisor/conf.d/supervisord.conf
 COPY start.sh /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
+
 ENTRYPOINT ["start-container"]

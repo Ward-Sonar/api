@@ -255,8 +255,8 @@ class SubmissionTest extends TestCase
         $response->assertStatus(201);
 
         $this->assertDatabaseHas('submissions', [
-            'id' => $this->client->id,
-            'abandoned' => false,
+            'client_id' => $this->client->id,
+            'abandoned' => 0,
             'atmosphere' => -1,
             'direction' => 0,
             'comment' => 'this is a comment',

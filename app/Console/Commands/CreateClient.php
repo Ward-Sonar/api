@@ -24,8 +24,6 @@ class CreateClient extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -40,8 +38,9 @@ class CreateClient extends Command
     public function handle()
     {
         $name = $this->argument('name');
-        if (strlen($name) > 254) {
+        if (mb_strlen($name) > 254) {
             $this->error('Max length for Client name is 254');
+
             return 1;
         }
         $secret = Str::random(60);
@@ -51,6 +50,7 @@ class CreateClient extends Command
         ]);
         $this->info("Created Client $name");
         $this->info("Authorization Token: $secret");
+
         return 0;
     }
 }

@@ -57,8 +57,6 @@ api_task_definition_family_variable = create_api_task_definition_family_variable
     environment_parameter)
 api_user_name_variable = create_api_user_name_variable(environment_parameter)
 ci_user_name_variable = create_ci_user_name_variable(environment_parameter)
-database_name_variable = create_database_name_variable()
-database_username_variable = create_database_username_variable()
 
 # Resources.
 load_balancer_security_group_resource = create_load_balancer_security_group_resource(
@@ -69,8 +67,8 @@ database_security_group_resource = create_database_security_group_resource(
     template, api_security_group_resource)
 database_subnet_group_resource = create_database_subnet_group_resource(
     template, subnets_parameter)
-database_resource = create_database_resource(template, database_name_variable, database_allocated_storage_parameter,
-                                             database_class_parameter, database_username_variable,
+database_resource = create_database_resource(template, database_name_parameter, database_allocated_storage_parameter,
+                                             database_class_parameter, database_username_parameter,
                                              database_password_parameter, database_security_group_resource,
                                              database_subnet_group_resource)
 uploads_bucket_resource = create_uploads_bucket_resource(
@@ -106,8 +104,8 @@ api_user_resource = create_api_user_resource(
 ci_user_resource = create_ci_user_resource(template, ci_user_name_variable)
 
 # Outputs.
-create_database_name_output(template, database_username_variable)
-create_database_username_output(template, database_username_variable)
+create_database_name_output(template, database_name_parameter)
+create_database_username_output(template, database_username_parameter)
 create_database_host_output(template, database_resource)
 create_database_port_output(template, database_resource)
 create_load_balancer_domain_output(template, load_balancer_resource)

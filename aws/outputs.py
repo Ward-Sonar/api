@@ -1,12 +1,12 @@
 from troposphere import Output, Ref, GetAtt, Sub
 
 
-def create_database_name_output(template, database_username_variable):
+def create_database_name_output(template, database_name_variable):
     return template.add_output(
         Output(
             'DatabaseName',
             Description='The database name',
-            Value=database_username_variable
+            Value=Ref(database_name_variable)
         )
     )
 
@@ -16,7 +16,7 @@ def create_database_username_output(template, database_username_variable):
         Output(
             'DatabaseUsername',
             Description='The username for the database',
-            Value=database_username_variable
+            Value=Ref(database_username_variable)
         )
     )
 
