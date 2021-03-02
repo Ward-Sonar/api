@@ -24,8 +24,18 @@ class Controller extends BaseController
      * )
      *
      *  @OA\Server(
-     *      url=L5_SWAGGER_CONST_HOST,
-     *      description=""
+     *      url="http://0.0.0.0/api/v1/",
+     *      description="Development Server"
+     *  )
+     *
+     *  @OA\Server(
+     *      url="https://api.staging.wardsonar.co.uk/api/v1/",
+     *      description="Staging Server"
+     *  )
+     *
+     *  @OA\Server(
+     *      url="https://api.wardsonar.co.uk/api/v1/",
+     *      description="Production Server"
      *  )
      *
      *  @OA\Tag(
