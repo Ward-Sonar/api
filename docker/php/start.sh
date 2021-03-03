@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "Container Environment: $CONTAINER_ENV"
+
 # Run PHP-FPM as current user
 if [ ! -z "$WWWUID" ]; then
     echo "Set www-data UID to $WWWUID"
