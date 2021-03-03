@@ -25,9 +25,14 @@ if ! command -v aws &> /dev/null; then
     unzip awscliv2.zip -d aws-tmp
     sudo ./aws-tmp/aws/install
     echo `aws --version`
-    if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
-        mkdir -p ~/.aws
-        cat <<EOF > ~/.aws/config
+    rm -r aws-tmp
+    rm awscliv2.zip
+fi
+
+if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
+    echo "Creating accessrole profile for IAM Role: $AWS_IAM_ROLE_ARN"
+    mkdir -p ~/.aws
+    cat <<EOF > ~/.aws/config
 [default]
     aws_access_key_id=$AWS_ACCESS_KEY_ID
     aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
@@ -36,9 +41,6 @@ if ! command -v aws &> /dev/null; then
     role_arn=$AWS_IAM_ROLE_ARN
     source_profile=default
 EOF
-    fi
-    rm -r aws-tmp
-    rm awscliv2.zip
 fi
 
 # Get the .env file.
@@ -58,11 +60,11 @@ echo $SECRET | python -c "import json,sys;obj=json.load(sys.stdin);print obj['Se
 source .env
 
 # Create the working directory archive to import into the final build
-if [ ${CI} ]; then
+if [ -z "${TRAVIS_COMMIT}" ]; then
+    TRAVIS_COMMIT=`git rev-parse HEAD`
+else
     cd ${TRAVIS_BUILD_DIR}
     composer install --no-dev --no-interaction --optimize-autoloader
-else
-    TRAVIS_COMMIT=`git rev-parse HEAD`
 fi
 git archive -o docker/app.tar --worktree-attributes ${TRAVIS_COMMIT}
 tar -rf docker/app.tar .env vendor
