@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "Container Environment: $CONTAINER_ENV"
+
 # Run PHP-FPM as current user
 if [ ! -z "$WWWUID" ]; then
     echo "Set www-data UID to $WWWUID"
@@ -28,20 +30,20 @@ if [ $# -gt 0 ]; then
     fi
 else
     # Otherwise start supervisord
+    if [ "$CONTAINER_ENV" != "local" ] && [ "$CONTAINER_ENV" != "testing" ]; then
+        echo "Install dependencies.."
+        composer install
 
-    echo "Install dependencies.."
-    composer install
+        echo "Run migrations..."
+        php /var/www/html/artisan migrate --force
 
-    echo "Run migrations..."
-    php /var/www/html/artisan migrate --force
+        echo "Cache config and routes..."
+        php /var/www/html/artisan config:cache
+        php /var/www/html/artisan route:cache
 
-    echo "Cache config and routes..."
-    php /var/www/html/artisan config:cache
-    php /var/www/html/artisan route:cache
-
-    echo "generate the application key"
-    php /var/www/html/artisan key:generate --force
-
+        echo "generate the application key"
+        php /var/www/html/artisan key:generate --force
+    fi
     echo "Run supervisor"
     /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 
