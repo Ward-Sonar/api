@@ -14,7 +14,7 @@ set -e
 
 # Set environment variables.
 echo "Setting deployment configuration for ${DEPLOY_ENV}..."
-export ENV_SECRET_ID="${DEPLOY_ENV}.api.env"
+export ENV_SECRET_ID=".env.api.${DEPLOY_ENV}"
 export SERVICE="api"
 
 # Install AWS-CLI
