@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Container Environment: $CONTAINER_ENV"
+echo "Container Environment: $ENVIRONMENT"
 
 # Run PHP-FPM as current user
 if [ ! -z "$WWWUID" ]; then
@@ -20,7 +20,7 @@ chmod -R ugo+rw ${PWD}/.composer
 
 # Run a command or supervisord
 if [ $# -gt 0 ]; then
-    if [ "$CONTAINER_ENV" == "local" ]; then
+    if [ "$ENVIRONMENT" == "local" ]; then
         echo "Running $@ as www-data"
         export XDG_CONFIG_HOME=${PWD}
         # If we passed a command, run it instead
@@ -30,7 +30,7 @@ if [ $# -gt 0 ]; then
     fi
 else
     # Otherwise start supervisord
-    if [ "$CONTAINER_ENV" != "local" ] && [ "$CONTAINER_ENV" != "testing" ]; then
+    if [ "$ENVIRONMENT" == "staging" ] || [ "$ENVIRONMENT" == "production" ]; then
         echo "Install dependencies.."
         composer install --no-dev --no-interaction --optimize-autoloader
 
@@ -43,6 +43,9 @@ else
 
         echo "generate the application key"
         php /var/www/html/artisan key:generate --force
+
+        echo "generate the API docs"
+        php /var/www/html/artisan l5-swagger:generate
     fi
     echo "Run supervisor"
     /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
