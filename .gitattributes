@@ -3,3 +3,16 @@
 *.scss linguist-vendored
 *.js linguist-vendored
 CHANGELOG.md export-ignore
+/tests export-ignore
+.editorconfig export-ignore
+.env.* export-ignore
+.gitattributes export-ignore
+.github export-ignore
+.gitignore export-ignore
+.styleci.yml export-ignore
+.travis export-ignore
+README.md export-ignore
+docker-compose.yml export-ignore
+phpunit.xml export-ignore
+server.php export-ignore
+webpack.mix.js export-ignore
