@@ -31,9 +31,6 @@ if [ $# -gt 0 ]; then
 else
     # Otherwise start supervisord
     if [ "$ENVIRONMENT" == "staging" ] || [ "$ENVIRONMENT" == "production" ]; then
-        echo "Install dependencies.."
-        composer install --no-dev --no-interaction --optimize-autoloader
-
         echo "Run migrations..."
         php /var/www/html/artisan migrate --force
 

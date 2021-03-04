@@ -12,64 +12,7 @@
 # Bail out on first error.
 set -e
 
-# Set environment variables.
-echo "Setting deployment configuration for ${DEPLOY_ENV}..."
-export ENV_SECRET_ID=".env.api.${DEPLOY_ENV}"
-export SERVICE="api"
-
-# Install AWS-CLI
-if ! command -v aws &> /dev/null; then
-    echo "Installing AWS CLI..."
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    rm -rf ./aws-tmp
-    unzip -q awscliv2.zip -d aws-tmp
-    sudo ./aws-tmp/aws/install
-    echo `aws --version`
-    rm -r aws-tmp
-    rm awscliv2.zip
-fi
-
-if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
-    echo "Creating accessrole profile for IAM Role: $AWS_IAM_ROLE_ARN"
-    mkdir -p ~/.aws
-    cat <<EOF > ~/.aws/config
-[default]
-    aws_access_key_id=$AWS_ACCESS_KEY_ID
-    aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-    region=$AWS_DEFAULT_REGION
-[profile accessrole]
-    role_arn=$AWS_IAM_ROLE_ARN
-    source_profile=default
-EOF
-fi
-
-# Get the .env file.
-if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
-    echo "Creating .env file from secret: $ENV_SECRET_ID as IAM Role: $AWS_IAM_ROLE_ARN"
-    SECRET=`aws secretsmanager get-secret-value \
-        --profile accessrole \
-        --secret-id ${ENV_SECRET_ID}`
-else
-    echo "Creating .env file from secret: $ENV_SECRET_ID"
-    SECRET=`aws secretsmanager get-secret-value \
-        --secret-id ${ENV_SECRET_ID}`
-fi
-
-echo $SECRET | python -c "import json,sys;obj=json.load(sys.stdin);print obj['SecretString'];" > .env
-
-source .env
-
-# If not a Travis build set the commit to use to create the archive
-if [ -z "${TRAVIS_COMMIT}" ]; then
-    TRAVIS_COMMIT=`git rev-parse HEAD`
-else
-    cd ${TRAVIS_BUILD_DIR}
-fi
-# Create the working directory archive to import into the final build
-echo "Pull the archived repo for commit: $TRAVIS_COMMIT"
-git archive -o docker/app.tar --worktree-attributes ${TRAVIS_COMMIT}
-tar -rf docker/app.tar .env
-
+source ${TRAVIS_BUILD_DIR}/docker/deploy/.env
 
 # Set the deploy variables based on the environment
 
@@ -95,10 +38,10 @@ fi
 docker context use default
 
 # echo "Build the app image..."
-docker build -t ${AWS_DOCKER_REPO} ./docker
+docker build -t ${AWS_DOCKER_REPO}:${TRAVIS_COMMIT} ${TRAVIS_BUILD_DIR}/docker
 
 # echo "Tag the app image"
-docker tag "$AWS_DOCKER_REPO:latest" "$REPO_URI:latest"
+docker tag $AWS_DOCKER_REPO:${TRAVIS_COMMIT} "$REPO_URI:latest"
 
 # echo "Push the tagged image to the repo..."
 docker push "$REPO_URI:latest"

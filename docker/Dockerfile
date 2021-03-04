@@ -96,11 +96,10 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY nginx/sites-available/default /etc/nginx/sites-available/default
 
 # Copy in the application working directory
-COPY app.tar app.tar
+COPY deploy /var/www/html
 
-RUN tar -xf app.tar -C /var/www/html \
-    && rm app.tar \
-    && chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html \
+    && rm -rf /var/www/html/docker
 
 # Expose port 80 for HTTP access.
 EXPOSE 80
