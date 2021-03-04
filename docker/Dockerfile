@@ -77,7 +77,7 @@ EXPOSE 9000
 ENTRYPOINT ["start-container"]
 
 # Deployed image
-FROM core-app
+FROM core-app as deployed-app
 
 # Set working directory
 WORKDIR /var/www/html
