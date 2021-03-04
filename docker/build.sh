@@ -15,7 +15,7 @@ set -e
 # Create the working directory archive to import into the final build
 echo "Pull the archived repo for commit: $TRAVIS_COMMIT"
 mkdir ${TRAVIS_BUILD_DIR}/docker/deploy
-git archive -o docker/app.tar --worktree-attributes ${TRAVIS_COMMIT} | tar -xf - -C ${TRAVIS_BUILD_DIR}/docker/deploy
+git archive --format=tar --worktree-attributes ${TRAVIS_COMMIT} | tar -xf - -C ${TRAVIS_BUILD_DIR}/docker/deploy
 
 echo "Install dependencies.."
 cd ${TRAVIS_BUILD_DIR}/docker/deploy
