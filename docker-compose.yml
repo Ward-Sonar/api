@@ -14,7 +14,9 @@ services:
       - wardsonar-net
 
   app:
-    build: ./docker/php
+    build:
+      context: ./docker
+      target: core-app
     container_name: wardsonar_app
     volumes:
       - .:/var/www/html

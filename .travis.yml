@@ -30,21 +30,21 @@ after_failure:
 deploy:
   # Tagged releases
   - provider: script
-    script: DEPLOY_ENV=production bash docker/deploy-ecs.sh
+    script: compose deploy production
     skip_cleanup: true
     on:
       all_branches: true
       condition: ${TRAVIS_TAG} =~ ^[0-9]{4}\.[0-9]{2}\.[0-9]{2}\.[0-9]+$
   # Release branches
   - provider: script
-    script: DEPLOY_ENV=release bash docker/deploy-ecs.sh
+    script: compose deploy release
     skip_cleanup: true
     on:
       all_branches: true
       condition: ${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH} =~ ^release\/.+$
   # Develop
   - provider: script
-    script: DEPLOY_ENV=staging bash docker/deploy-ecs.sh
+    script: compose deploy staging
     skip_cleanup: true
     on:
       branch: develop
