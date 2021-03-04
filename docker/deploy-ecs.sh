@@ -22,7 +22,7 @@ if ! command -v aws &> /dev/null; then
     echo "Installing AWS CLI..."
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     rm -rf ./aws-tmp
-    unzip awscliv2.zip -d aws-tmp
+    unzip -q awscliv2.zip -d aws-tmp
     sudo ./aws-tmp/aws/install
     echo `aws --version`
     rm -r aws-tmp
@@ -59,15 +59,16 @@ echo $SECRET | python -c "import json,sys;obj=json.load(sys.stdin);print obj['Se
 
 source .env
 
-# Create the working directory archive to import into the final build
+# If not a Travis build set the commit to use to create the archive
 if [ -z "${TRAVIS_COMMIT}" ]; then
     TRAVIS_COMMIT=`git rev-parse HEAD`
 else
     cd ${TRAVIS_BUILD_DIR}
-    composer install --no-dev --no-interaction --optimize-autoloader
 fi
+# Create the working directory archive to import into the final build
+echo "Pull the archived repo for commit: $TRAVIS_COMMIT"
 git archive -o docker/app.tar --worktree-attributes ${TRAVIS_COMMIT}
-tar -rf docker/app.tar .env vendor
+tar -rf docker/app.tar .env
 
 
 # Set the deploy variables based on the environment
@@ -81,11 +82,6 @@ OLD_IFS=$IFS
 IFS='/'
 read AWS_DOCKER_REGISTRY AWS_DOCKER_REPO <<< "${REPO_URI}"
 IFS=$OLD_IFS
-
-echo "REPO_URI $REPO_URI"
-echo "AWS_DOCKER_REGISTRY $AWS_DOCKER_REGISTRY"
-echo "AWS_IAM_ROLE_ARN $AWS_IAM_ROLE_ARN"
-echo "CLUSTER $CLUSTER"
 
 # Retrieve an authentication token and authenticate Docker client to project registry.
 if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
