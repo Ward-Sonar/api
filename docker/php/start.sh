@@ -32,7 +32,7 @@ else
     # Otherwise start supervisord
     if [ "$CONTAINER_ENV" != "local" ] && [ "$CONTAINER_ENV" != "testing" ]; then
         echo "Install dependencies.."
-        composer install
+        composer install --no-dev --no-interaction --optimize-autoloader
 
         echo "Run migrations..."
         php /var/www/html/artisan migrate --force
@@ -47,5 +47,5 @@ else
     echo "Run supervisor"
     /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 
-    supervisorctl status
+    echo `supervisorctl status`
 fi
