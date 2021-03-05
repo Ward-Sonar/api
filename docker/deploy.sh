@@ -14,18 +14,6 @@ set -e
 
 source ${TRAVIS_BUILD_DIR}/docker/deploy/.env
 
-# Set the deploy variables based on the environment
-
-REPO_URI_VAR=`echo "REPO_URI_${DEPLOY_ENV}" | tr [a-z] [A-Z]`
-export REPO_URI="${!REPO_URI_VAR}"
-CLUSTER_VAR=`echo "CLUSTER_${DEPLOY_ENV}" | tr [a-z] [A-Z]`
-export CLUSTER="${!CLUSTER_VAR}"
-
-OLD_IFS=$IFS
-IFS='/'
-read AWS_DOCKER_REGISTRY AWS_DOCKER_REPO <<< "${REPO_URI}"
-IFS=$OLD_IFS
-
 # Retrieve an authentication token and authenticate Docker client to project registry.
 if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
     echo "Logging in to ECR docker registry: $AWS_DOCKER_REGISTRY in region $AWS_DEFAULT_REGION as IAM_Role $AWS_IAM_ROLE_ARN"
@@ -37,13 +25,8 @@ fi
 
 docker context use default
 
-# echo "Build the app image..."
-docker build -t ${AWS_DOCKER_REPO}:${TRAVIS_COMMIT} ${TRAVIS_BUILD_DIR}/docker
-
-# echo "Tag the app image"
-docker tag $AWS_DOCKER_REPO:${TRAVIS_COMMIT} "$REPO_URI:latest"
-
-# echo "Push the tagged image to the repo..."
+# echo "Push the tagged images to the repo..."
+docker push ${AWS_DOCKER_REPO}:${TRAVIS_COMMIT}
 docker push "$REPO_URI:latest"
 
 # Update the service.
