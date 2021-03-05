@@ -2,8 +2,7 @@
 
 # Requires the following environment variables:
 # $DEPLOY_ENV = The environment (production/staging).
-# $REPO_URI_${DEPLOY_ENV} = The URI of the ECR repo to push to, e.g. REPO_URI_STAGING.
-# $CLUSTER_${DEPLOY_ENV} = The name of the ECS cluster to deploy to, e.g. CLUSTER_STAGING.
+# $REPO_URI = The URI of the ECR repo to push to.
 # $AWS_ACCESS_KEY_ID = The AWS access key.
 # $AWS_SECRET_ACCESS_KEY = The AWS secret access key.
 # $AWS_DEFAULT_REGION = The AWS region.
@@ -66,7 +65,7 @@ docker context use default
 
 # echo "Build the app image"
 echo "Build the Docker Image: $AWS_DOCKER_REPO"
-docker build -t ${AWS_DOCKER_REPO} ${TRAVIS_BUILD_DIR}/docker
+docker build --build-arg DEPLOY_ENV=${DEPLOY_ENV} -t ${AWS_DOCKER_REPO} ${TRAVIS_BUILD_DIR}/docker
 # echo "Tag the app image"
 echo "Tag the Docker Image: $REPO_URI:$TRAVIS_COMMIT"
 docker tag ${AWS_DOCKER_REPO} ${REPO_URI}:${TRAVIS_COMMIT}
