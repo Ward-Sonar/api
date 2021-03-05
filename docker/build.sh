@@ -60,7 +60,7 @@ else
         --secret-id ${ENV_SECRET_ID}`
 fi
 
-echo $SECRET | python -c "import json,sys;obj=json.load(sys.stdin);print obj['SecretString'];" > ${TRAVIS_BUILD_DIR}/docker/deploy/.env
+echo $SECRET | python -c "import json,sys;obj=json.load(sys.stdin);print(obj['SecretString']);" > ${TRAVIS_BUILD_DIR}/docker/deploy/.env
 
 echo "Build the Docker Image: $AWS_DOCKER_REPO:$TRAVIS_COMMIT"
 docker context use default
