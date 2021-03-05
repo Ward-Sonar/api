@@ -79,6 +79,10 @@ ENTRYPOINT ["start-container"]
 # Deployed image
 FROM core-app as deployed-app
 
+ARG DEPLOY_ENV=staging
+
+ENV ENVIRONMENT=${DEPLOY_ENV}
+
 # Set working directory
 WORKDIR /var/www/html
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 # Requires the following environment variables:
-# $ENVIRONMENT = The environment (production/release/staging).
-# $REPO_URI = The URI of the ECR repo to push to.
-# $CLUSTER = The name of the ECS cluster to deploy to.
+# $DEPLOY_ENV = The environment (production/release/staging).
+# $REPO_URI_${DEPLOY_ENV} = The URI of the ECR repo to push to, e.g. REPO_URI_STAGING.
+# $CLUSTER_${DEPLOY_ENV} = The name of the ECS cluster to deploy to, e.g. CLUSTER_STAGING.
 # $AWS_ACCESS_KEY_ID = The AWS access key.
 # $AWS_SECRET_ACCESS_KEY = The AWS secret access key.
 # $AWS_DEFAULT_REGION = The AWS region.
