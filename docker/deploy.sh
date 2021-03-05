@@ -26,7 +26,7 @@ fi
 docker context use default
 
 # echo "Push the tagged images to the repo..."
-docker push ${AWS_DOCKER_REPO}:${TRAVIS_COMMIT}
+docker push ${REPO_URI}:${TRAVIS_COMMIT}
 docker push "$REPO_URI:latest"
 
 # Update the service.

@@ -62,12 +62,13 @@ fi
 
 echo $SECRET | python -c "import json,sys;obj=json.load(sys.stdin);print(obj['SecretString']);" > ${TRAVIS_BUILD_DIR}/docker/deploy/.env
 
-echo "Build the Docker Image: $AWS_DOCKER_REPO:$TRAVIS_COMMIT"
 docker context use default
 
-# echo "Build the app image..."
-docker build -t ${AWS_DOCKER_REPO}:${TRAVIS_COMMIT} ${TRAVIS_BUILD_DIR}/docker
-
-echo "Tag the Docker Image: $REPO_URI:latest"
+# echo "Build the app image"
+echo "Build the Docker Image: $AWS_DOCKER_REPO"
+docker build -t ${AWS_DOCKER_REPO} ${TRAVIS_BUILD_DIR}/docker
 # echo "Tag the app image"
-docker tag $AWS_DOCKER_REPO:${TRAVIS_COMMIT} "$REPO_URI:latest"
+echo "Tag the Docker Image: $REPO_URI:$TRAVIS_COMMIT"
+docker tag ${AWS_DOCKER_REPO} ${REPO_URI}:${TRAVIS_COMMIT}
+echo "Tag the Docker Image: $REPO_URI:latest"
+docker tag ${AWS_DOCKER_REPO} "$REPO_URI:latest"
