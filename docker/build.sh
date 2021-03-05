@@ -31,7 +31,7 @@ if ! command -v aws &> /dev/null; then
     sudo ${HOME}/aws-tmp/aws/install
     echo `aws --version`
     rm -r ${HOME}/aws-tmp
-    rm awscliv2.zip
+    rm "$HOME/awscliv2.zip"
 fi
 
 if [ ! -z "${AWS_IAM_ROLE_ARN}" ]; then
