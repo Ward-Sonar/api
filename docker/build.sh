@@ -27,7 +27,7 @@ if ! command -v aws &> /dev/null; then
     echo "Installing AWS CLI..."
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "$HOME/awscliv2.zip"
     rm -rf ${HOME}/aws-tmp
-    unzip -q awscliv2.zip -d ${HOME}/aws-tmp
+    unzip -q "$HOME/awscliv2.zip" -d ${HOME}/aws-tmp
     sudo ${HOME}/aws-tmp/aws/install
     echo `aws --version`
     rm -r ${HOME}/aws-tmp
