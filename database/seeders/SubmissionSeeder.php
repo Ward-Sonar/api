@@ -11,21 +11,6 @@ use Illuminate\Support\Str;
 class SubmissionSeeder extends Seeder
 {
     /**
-     * Causes.
-     *
-     * @var array
-     */
-    protected $causes = [
-        1 => 'The staff',
-        2 => 'The other patients',
-        3 => 'How I\'m feeling',
-        4 => 'The ward environment',
-        5 => 'Option 5',
-        6 => 'Option 6',
-        7 => 'Other',
-    ];
-
-    /**
      * Demo Submissions data.
      *
      * @var array
@@ -87,14 +72,6 @@ class SubmissionSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('causes')
-            ->upsert(collect($this->causes)->map(function ($text, $id) {
-                return [
-                    'id' => $id,
-                    'text' => $text,
-                ];
-            })->all(), ['id'], ['text']);
-
         $client_secret = Str::random(60);
 
         $client = Client::factory()->create([
