@@ -57,12 +57,21 @@ def create_ci_user_name_variable(environment_parameter):
     return Join('-', ['ci-api', Ref(environment_parameter)])
 
 
-def create_database_name_variable():
-    return 'one_hounslow_connect'
-
-
-def create_database_username_variable():
-    return 'one_hounslow_connect'
+def create_database_access_ip_ranges_variable(environment_parameter):
+    return [
+        '64.18.0.0/20',
+        '64.233.160.0/19',
+        '66.102.0.0/20',
+        '66.249.80.0/20',
+        '72.14.192.0/18',
+        '74.125.0.0/16',
+        '108.177.8.0/21',
+        '173.194.0.0/16',
+        '207.126.144.0/20',
+        '209.85.128.0/17',
+        '216.58.192.0/19',
+        '216.239.32.0/19'
+    ]
 
 
 def create_elasticsearch_domain_name_variable(environment_parameter):

@@ -152,7 +152,7 @@
             "Type": "List<AWS::EC2::Subnet::Id>"
         },
         "Uuid": {
-            "Default": "aa981cee-c3d3-4461-b95c-f00ca931b87e",
+            "Default": "4713915e-14f2-475c-86b8-af4756817217",
             "Description": "The unique ID for this stack.",
             "MaxLength": "36",
             "MinLength": "36",
@@ -748,6 +748,120 @@
                         "FromPort": "443",
                         "IpProtocol": "tcp",
                         "ToPort": "443"
+                    }
+                ]
+            },
+            "Type": "AWS::EC2::SecurityGroup"
+        },
+        "ReadOnlyDatabase": {
+            "Properties": {
+                "DBInstanceClass": {
+                    "Ref": "DatabaseClass"
+                },
+                "Engine": "MySQL",
+                "EngineVersion": "5.7",
+                "PubliclyAccessible": "true",
+                "SourceDBInstanceIdentifier": {
+                    "Ref": "Database"
+                },
+                "VPCSecurityGroups": [
+                    {
+                        "Fn::GetAtt": [
+                            "ReadOnlyDatabaseSecurityGroup",
+                            "GroupId"
+                        ]
+                    }
+                ]
+            },
+            "Type": "AWS::RDS::DBInstance"
+        },
+        "ReadOnlyDatabaseSecurityGroup": {
+            "Properties": {
+                "GroupDescription": "For connecting to the read only replica MySQL instance",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "64.18.0.0/20",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "64.233.160.0/19",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "66.102.0.0/20",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "66.249.80.0/20",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "72.14.192.0/18",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "74.125.0.0/16",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "108.177.8.0/21",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "173.194.0.0/16",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "207.126.144.0/20",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "209.85.128.0/17",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "216.58.192.0/19",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
+                    },
+                    {
+                        "CidrIp": "216.239.32.0/19",
+                        "Description": "MySQL access from Data Studio",
+                        "FromPort": "3306",
+                        "IpProtocol": "tcp",
+                        "ToPort": "3306"
                     }
                 ]
             },
