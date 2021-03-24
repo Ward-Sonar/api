@@ -6,10 +6,10 @@ from parameters import create_uuid_parameter, create_environment_parameter, crea
     create_api_instance_class_parameter, create_api_instance_count_parameter, create_api_task_count_parameter
 from variables import create_uploads_bucket_name_variable, create_api_launch_template_name_variable, \
     create_docker_repository_name_variable, create_api_log_group_name_variable, create_api_task_definition_family_variable, \
-    create_api_user_name_variable, create_ci_user_name_variable, create_database_name_variable, create_database_username_variable
+    create_api_user_name_variable, create_ci_user_name_variable, create_database_access_ip_ranges_variable
 from resources import create_load_balancer_security_group_resource, create_api_security_group_resource, \
-    create_database_security_group_resource, create_database_subnet_group_resource, \
-    create_database_resource, create_uploads_bucket_resource, \
+    create_database_security_group_resource, create_read_only_database_security_group_resource, create_database_subnet_group_resource, create_database_resource, \
+    create_read_only_database_resource, create_uploads_bucket_resource, \
     create_ecs_cluster_role_resource, create_ec2_instance_profile_resource, create_ecs_cluster_resource, \
     create_launch_template_resource, create_docker_repository_resource, create_api_log_group_resource, \
     create_api_task_definition_resource, \
@@ -57,6 +57,8 @@ api_task_definition_family_variable = create_api_task_definition_family_variable
     environment_parameter)
 api_user_name_variable = create_api_user_name_variable(environment_parameter)
 ci_user_name_variable = create_ci_user_name_variable(environment_parameter)
+database_access_ip_ranges_variable = create_database_access_ip_ranges_variable(
+    environment_parameter)
 
 # Resources.
 load_balancer_security_group_resource = create_load_balancer_security_group_resource(
@@ -65,12 +67,16 @@ api_security_group_resource = create_api_security_group_resource(
     template, load_balancer_security_group_resource)
 database_security_group_resource = create_database_security_group_resource(
     template, api_security_group_resource)
+read_only_database_security_group_resource = create_read_only_database_security_group_resource(
+    template, database_access_ip_ranges_variable)
 database_subnet_group_resource = create_database_subnet_group_resource(
     template, subnets_parameter)
 database_resource = create_database_resource(template, database_name_parameter, database_allocated_storage_parameter,
                                              database_class_parameter, database_username_parameter,
                                              database_password_parameter, database_security_group_resource,
                                              database_subnet_group_resource)
+read_only_database_resource = create_read_only_database_resource(
+    template, database_class_parameter, database_resource, read_only_database_security_group_resource)
 uploads_bucket_resource = create_uploads_bucket_resource(
     template, uploads_bucket_name_variable)
 ecs_cluster_role_resource = create_ecs_cluster_role_resource(template)

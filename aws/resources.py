@@ -75,6 +75,27 @@ def create_database_security_group_resource(template, api_security_group_resourc
     )
 
 
+def create_read_only_database_security_group_resource(template, database_access_ip_ranges_variable):
+    security_group_ingress_rules = []
+
+    for ip_range in database_access_ip_ranges_variable:
+        security_group_ingress_rules.append(ec2.SecurityGroupRule(
+            Description='MySQL access from Data Studio',
+            IpProtocol='tcp',
+            FromPort='3306',
+            ToPort='3306',
+            CidrIp=ip_range
+        ))
+
+    return template.add_resource(
+        ec2.SecurityGroup(
+            'ReadOnlyDatabaseSecurityGroup',
+            GroupDescription='For connecting to the read only replica MySQL instance',
+            SecurityGroupIngress=security_group_ingress_rules
+        )
+    )
+
+
 def create_redis_security_group_resource(template, api_security_group_resource):
     return template.add_resource(
         ec2.SecurityGroup(
@@ -120,6 +141,21 @@ def create_database_resource(template, database_name_variable, database_allocate
                 GetAtt(database_security_group_resource, 'GroupId')],
             DBSubnetGroupName=Ref(database_subnet_group_resource),
             PubliclyAccessible=False
+        )
+    )
+
+
+def create_read_only_database_resource(template, database_class_parameter, database_resource, read_only_database_security_group_resource):
+    return template.add_resource(
+        rds.DBInstance(
+            'ReadOnlyDatabase',
+            DBInstanceClass=Ref(database_class_parameter),
+            Engine='MySQL',
+            EngineVersion='5.7',
+            SourceDBInstanceIdentifier=Ref(database_resource),
+            VPCSecurityGroups=[
+                GetAtt(read_only_database_security_group_resource, 'GroupId')],
+            PubliclyAccessible=True
         )
     )
 
