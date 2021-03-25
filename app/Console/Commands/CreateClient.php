@@ -43,13 +43,16 @@ class CreateClient extends Command
 
             return 1;
         }
+
         $secret = Str::random(60);
-        Client::factory()->create([
+        $client = Client::factory()->create([
             'name' => $name,
             'secret' => hash('sha256', $secret),
         ]);
+
         $this->info("Created Client $name");
         $this->info("Authorization Token: $secret");
+        $this->info("URL Key: {$client->urlkey}");
 
         return 0;
     }
