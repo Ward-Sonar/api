@@ -3,6 +3,7 @@
 # Set environment variables for dev
 export APP_ENV=${APP_ENV:-local}
 export APP_PORT=${APP_PORT:-80}
+export APP_USER_ID=${APP_USER_ID:-1000}
 export DB_ROOT_PASS=${DB_ROOT_PASS:-root}
 export DB_NAME=${DB_NAME:-wardsonar}
 export DB_USER=${DB_USER:-wardsonar}
@@ -31,6 +32,15 @@ if [ $# -gt 0 ];then
             app \
             php artisan "$@"
 
+    # If "bash" is used, open a shell
+    # inside a new container
+    elif [ "$1" == "bash" ]; then
+        shift 1
+        $COMPOSE run --rm ${TTY} \
+            -w /var/www/html \
+            app \
+            bash "$@"
+
     # If "composer" is used, pass-thru to "composer"
     # inside a new container
     elif [ "$1" == "composer" ]; then
@@ -47,7 +57,31 @@ if [ $# -gt 0 ];then
         $COMPOSE run --rm ${TTY} \
             -w /var/www/html \
             app \
-            ./vendor/bin/phpunit "$@"
+            vendor/bin/phpunit "$@"
+
+    # If "style" is used, run PHP CS Fixer,
+    # pass-thru any extra arguments to php-cs-fixer
+    elif [ "$1" == "style" ]; then
+        shift 1
+        $COMPOSE run --rm ${TTY} \
+            -w /var/www/html \
+            app \
+            vendor/bin/php-cs-fixer fix --config=.php_cs --allow-risky=yes --verbose "$@"
+
+    # If "docs" is used, run swagger open-api docs
+    # inside a new container
+    elif [ "$1" == "docs" ]; then
+        shift 1
+        $COMPOSE run --rm ${TTY} \
+            -w /var/www/html \
+            app \
+            php artisan l5-swagger:generate "$@"
+
+    # If "deploy" is used, run deploy script,
+    # pass-thru any extra arguments to deploy script
+    elif [ "$1" == "deploy" ]; then
+        export DEPLOY_ENV=${2:-"staging"}
+        ./docker/deploy-ecs.sh
     # Else, pass-thru args to docker-compose
     else
         $COMPOSE "$@"

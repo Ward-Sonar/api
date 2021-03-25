@@ -1,0 +1,50 @@
+os: linux
+dist: focal
+
+branches:
+  only:
+    # Tagged releases
+    - /^[0-9]{4}\.[0-9]{2}\.[0-9]{2}\.[0-9]+$/
+    # Master
+    - master
+    # Develop
+    - develop
+
+services:
+  - docker
+
+before_script:
+  - if [ ! -z "$DOCKER_USER" ] && [ ! -z "$DOCKER_PWD" ];  then echo ${DOCKER_PWD} | docker login --username ${DOCKER_USER} --password-stdin; fi
+  - ./compose build
+  - ./compose up -d
+  - ./compose composer install
+
+script:
+  - ./compose style
+  - ./compose test
+  - ./compose docs
+
+after_failure:
+  - cat storage/logs/testing.log
+
+deploy:
+  # Tagged releases
+  - provider: script
+    script: DEPLOY_ENV=production .travis/deploy.sh
+    skip_cleanup: true
+    on:
+      all_branches: true
+      condition: ${TRAVIS_TAG} =~ ^[0-9]{4}\.[0-9]{2}\.[0-9]{2}\.[0-9]+$
+  # Release branches
+  - provider: script
+    script: DEPLOY_ENV=release .travis/deploy.sh
+    skip_cleanup: true
+    on:
+      all_branches: true
+      condition: ${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH} =~ ^release\/.+$
+  # Develop
+  - provider: script
+    script: DEPLOY_ENV=staging .travis/deploy.sh
+    skip_cleanup: true
+    on:
+      branch: develop

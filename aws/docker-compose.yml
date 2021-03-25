@@ -1,0 +1,41 @@
+version: "3.0"
+services:
+  app:
+    image: ${REPO_URI}:latest
+    container_name: wardsonar_app_staging
+    ports:
+      - 80:80
+    environment:
+      CONTAINER_ENV: staging
+      WWWUID: "${APP_USER_ID}"
+    links:
+      - db:mysql
+    depends_on:
+      - db
+    volumes:
+      - ../:/var/www/html
+    working_dir: /var/www/html
+    networks:
+      - wardsonar-net-staging
+
+  db:
+    image: mariadb:latest
+    container_name: wardsonar_db_staging
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/db/import:/docker-entrypoint-initdb.d/
+      - ./docker/db/conf/:/etc/mysql/conf.d
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS}"
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASS}"
+    networks:
+      - wardsonar-net-staging
+
+volumes:
+  db_data:
+
+networks:
+  wardsonar-net-staging:

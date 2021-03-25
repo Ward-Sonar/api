@@ -1,0 +1,42 @@
+server {
+    listen 80 default_server;
+
+    root /var/www/html/public;
+
+    index index.html index.htm index.php;
+
+    server_name _;
+
+    charset utf-8;
+
+    location = /favicon.ico { log_not_found off; access_log off; }
+    location = /robots.txt  { log_not_found off; access_log off; }
+
+    location ~ ^/_php-fpm/(status|ping)$ {
+        access_log off;
+        log_not_found off;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass 0.0.0.0:9000;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass 0.0.0.0:9000;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_read_timeout 300;
+    }
+
+    error_page 404 /index.php;
+
+    location ~ /\.ht {
+        deny all;
+    }
+}

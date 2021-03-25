@@ -1,6 +1,7 @@
 ARG PHP=7.4
 
-FROM php:${PHP}-fpm
+# Core development image
+FROM php:${PHP}-fpm as core-app
 
 ARG PHP
 
@@ -60,16 +61,49 @@ RUN pecl install redis-5.1.1 \
     && docker-php-ext-enable redis
 
 # Configure Opcache
-ADD opcache-recommended.ini /usr/local/etc/php/conf.d/opcache.ini
+ADD php/opcache-recommended.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Configure PHP
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-ADD local.ini /usr/local/etc/php/conf.d/local.ini
+ADD php/local.ini /usr/local/etc/php/conf.d/local.ini
 
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.local.conf /etc/supervisor/conf.d/supervisord.conf
 COPY start.sh /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
+
 ENTRYPOINT ["start-container"]
+
+# Deployed image
+FROM core-app as deployed-app
+
+ARG DEPLOY_ENV=staging
+
+ENV ENVIRONMENT=${DEPLOY_ENV}
+
+# Set working directory
+WORKDIR /var/www/html
+
+RUN apt-get update \
+    && apt-get install -y locales nginx \
+    && locale-gen en_GB.UTF-8
+
+# Redirect NGINX output to stdout and stderr.
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log \
+    &&  echo "daemon off;" >> /etc/nginx/nginx.conf
+
+# Copy configuration files over for installed software.
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY nginx/sites-available/default /etc/nginx/sites-available/default
+
+# Copy in the application working directory
+COPY deploy /var/www/html
+
+RUN chown -R www-data:www-data /var/www/html \
+    && rm -rf /var/www/html/docker
+
+# Expose port 80 for HTTP access.
+EXPOSE 80
