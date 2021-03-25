@@ -20,7 +20,8 @@ def create_environment_parameter(template):
             'Environment',
             Type='String',
             Description='The environment this stack is for (e.g. production or staging).',
-            MinLength='1'
+            AllowedValues='[production, staging]',
+            ConstraintDescription='must be one of production or staging'
         )
     )
 
