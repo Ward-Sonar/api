@@ -65,7 +65,7 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * Bootstrapper classes
+     * Bootstrapper classes.
      *
      * @return array
      */
