@@ -2,14 +2,19 @@
 
 namespace Tests\Feature;
 
+use App\Models\Cause;
 use App\Models\Client;
 use App\Models\Submission;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Str;
 use Osteel\OpenApi\Testing\ResponseValidatorBuilder;
 use Tests\TestCase;
 
 class AtmosphereTest extends TestCase
 {
+    use WithFaker;
+
     /**
      * Client
      *
@@ -72,7 +77,9 @@ class AtmosphereTest extends TestCase
     {
         $submission = Submission::factory()
             ->for($this->client)
-            ->create();
+            ->create([
+                'created_at' => $this->faker->dateTimeBetween($this->client->shiftStart, $this->client->shiftEnd),
+            ]);
 
         $response = $this->getJson(
             '/api/' . $this->version . '/atmosphere',
@@ -93,7 +100,9 @@ class AtmosphereTest extends TestCase
     {
         $submission = Submission::factory()
             ->for($this->client)
-            ->create();
+            ->create([
+                'created_at' => $this->faker->dateTimeBetween($this->client->shiftStart, $this->client->shiftEnd),
+            ]);
 
         $response = $this->getJson(
             '/api/' . $this->version . '/atmosphere/badkey',
@@ -114,7 +123,11 @@ class AtmosphereTest extends TestCase
     {
         $submission = Submission::factory()
             ->for($this->client)
-            ->create();
+            ->has(Cause::factory())
+            ->create([
+                'created_at' => $this->faker->dateTimeBetween($this->client->shiftStart, $this->client->shiftEnd),
+                'abandoned' => false,
+            ]);
 
         $response = $this->getJson(
             '/api/' . $this->version . '/atmosphere/' . $this->client->urlkey,
@@ -134,5 +147,63 @@ class AtmosphereTest extends TestCase
         );
 
         $this->assertTrue($result);
+    }
+
+    /**
+     * Client can read atmosphere with a correct Url key
+     *
+     * @test
+     * @return void
+     */
+    public function getAtmosphereCalculatedFromShiftAverage200()
+    {
+        $submissions = Submission::factory()
+            ->count(20)
+            ->for($this->client)
+            ->has(Cause::factory())
+            ->state(new Sequence(function () {
+                return ['created_at' => $this->faker->dateTimeBetween($this->client->shiftStart, $this->client->shiftEnd)];
+            }))
+            ->create([
+                'abandoned' => false,
+            ]);
+
+        Submission::factory()
+            ->count(20)
+            ->for($this->client)
+            ->has(Cause::factory())
+            ->state(new Sequence(function () {
+                return ['created_at' => $this->faker->dateTimeBetween($this->client->shiftStart, $this->client->shiftEnd)];
+            }))
+            ->create([
+                'abandoned' => true,
+            ]);
+
+        $averageAtmosphere = $submissions->pluck('atmosphere')->median();
+        $averageDirection = $submissions->pluck('direction')->median();
+
+        $response = $this->getJson(
+            '/api/' . $this->version . '/atmosphere/' . $this->client->urlkey,
+            [
+                'Authorization' => 'Bearer ' . $this->client_secret,
+            ]
+        );
+
+        $response->assertOk();
+
+        $validator = ResponseValidatorBuilder::fromJson(storage_path('api-docs/api-docs.json'))->getValidator();
+
+        $result = $validator->validate(
+            '/atmosphere/{urlkey}',
+            'get',
+            $response->baseResponse
+        );
+
+        $this->assertTrue($result);
+
+        $response->assertJsonFragment([
+            'atmosphere' => $averageAtmosphere,
+            'direction' => $averageDirection,
+        ]);
     }
 }
