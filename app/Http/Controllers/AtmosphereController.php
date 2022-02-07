@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AtmosphereResource;
 use App\Models\Client;
 use Illuminate\Http\Request;
 
@@ -15,8 +14,8 @@ class AtmosphereController extends Controller
      *      path="/atmosphere/{urlkey}",
      *      operationId="getClientSubmissionsLatest",
      *      tags={"Atmosphere"},
-     *      summary="Get the latest submission for a client",
-     *      description="Returns a single record data",
+     *      summary="Get the shift median submission for a client",
+     *      description="Returns the median atmosphere and direction",
      *      @OA\Parameter(
      *          name="urlkey",
      *          description="Client urlkey",
@@ -29,7 +28,29 @@ class AtmosphereController extends Controller
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/AtmosphereResource")
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="object",
+     *                  @OA\Property(
+     *                      property="attributes",
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="atmosphere",
+     *                          ref="#/components/schemas/Submission/properties/atmosphere"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="direction",
+     *                          ref="#/components/schemas/Submission/properties/direction"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="datetime",
+     *                          ref="#/components/schemas/Submission/properties/created_at"
+     *                      )
+     *                  )
+     *              )
+     *          )
      *       ),
      *      @OA\Response(
      *          response=400,
@@ -51,10 +72,23 @@ class AtmosphereController extends Controller
     {
         $client = Client::where('urlkey', '=', $urlkey)->firstOrFail();
 
-        $submission = $client->submissions()->latest()->firstOr(function () {
-            return response(null, 204);
-        });
+        $shiftSubmissions = $client->completedShiftSubmissions();
 
-        return new AtmosphereResource($submission);
+        if ($shiftSubmissions->isEmpty()) {
+            return response(null, 204);
+        }
+
+        $atmosphere = $shiftSubmissions->pluck('atmosphere')->median();
+        $direction = $shiftSubmissions->pluck('direction')->median();
+
+        return response()->json([
+            'data' => [
+                'attributes' => [
+                    'atmosphere' => round($atmosphere),
+                    'direction' => round($direction),
+                    'datetime' => now()->toIso8601String(),
+                ],
+            ],
+        ]);
     }
 }

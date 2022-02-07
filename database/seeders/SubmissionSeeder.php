@@ -6,7 +6,6 @@ use App\Models\Client;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class SubmissionSeeder extends Seeder
 {
@@ -68,35 +67,57 @@ class SubmissionSeeder extends Seeder
     ];
 
     /**
+     * Generate Shift data.
+     *
+     * @param App\Models\Client $client
+     * @return array
+     */
+    public function generateShiftSubmissions(Client $client)
+    {
+        $submissions = [];
+
+        $submissionTime = $client->shiftStart->clone();
+
+        while ($submissionTime->lessThan($client->shiftEnd)) {
+            $submissions[] = [
+                $submissionTime->toDateTimeString(),
+                mt_rand(-2, 2),
+                mt_rand(-1, 1),
+                mt_rand(1, 7),
+                'Supplementary comments',
+            ];
+            $submissionTime->addMinutes(mt_rand(1, 10));
+        }
+
+        return $submissions;
+    }
+
+    /**
      * Run the database seeds.
      */
     public function run()
     {
-        $client_secret = Str::random(60);
+        $clients = Client::all();
 
-        $client = Client::factory()->create([
-            'name' => 'Demo',
-            'secret' => hash('sha256', $client_secret),
-        ]);
+        foreach ($clients as $client) {
+            $submissions = $this->generateShiftSubmissions($client);
+            collect($submissions)->each(function ($submission) use ($client) {
+                $submission_id = DB::table('submissions')
+                    ->insertGetId([
+                        'atmosphere' => $submission[1],
+                        'direction' => $submission[2],
+                        'comment' => $submission[4],
+                        'client_id' => $client->id,
+                        'abandoned' => false,
+                        'created_at' => (new Carbon($submission[0]))->toDateTimeString(),
+                    ]);
 
-        $this->command->info("Demo Client Created. Secret: $client_secret UrlKey: {$client->urlkey}");
-
-        collect($this->submissions)->each(function ($submission) use ($client) {
-            $submission_id = DB::table('submissions')
-                ->insertGetId([
-                    'atmosphere' => $submission[1],
-                    'direction' => $submission[2],
-                    'comment' => $submission[4],
-                    'client_id' => $client->id,
-                    'abandoned' => false,
-                    'created_at' => (new Carbon($submission[0]))->toDateTimeString(),
-                ]);
-
-            DB::table('cause_submission')
-                ->insert([
-                    'submission_id' => $submission_id,
-                    'cause_id' => $submission[3],
-                ]);
-        });
+                DB::table('cause_submission')
+                    ->insert([
+                        'submission_id' => $submission_id,
+                        'cause_id' => $submission[3],
+                    ]);
+            });
+        }
     }
 }
