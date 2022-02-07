@@ -32,8 +32,8 @@
                 "tags": [
                     "Atmosphere"
                 ],
-                "summary": "Get the latest submission for a client",
-                "description": "Returns a single record data",
+                "summary": "Get the shift median submission for a client",
+                "description": "Returns the median atmosphere and direction",
                 "operationId": "getClientSubmissionsLatest",
                 "parameters": [
                     {
@@ -51,9 +51,7 @@
                         "description": "Successful operation",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AtmosphereResource"
-                                }
+                                "schema": {}
                             }
                         }
                     },
