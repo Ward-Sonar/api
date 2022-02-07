@@ -51,7 +51,32 @@
                         "description": "Successful operation",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Handle the incoming request.",
+                                            "properties": {
+                                                "attributes": {
+                                                    "description": "Handle the incoming request.",
+                                                    "properties": {
+                                                        "atmosphere": {
+                                                            "$ref": "#/components/schemas/Submission/properties/atmosphere"
+                                                        },
+                                                        "direction": {
+                                                            "$ref": "#/components/schemas/Submission/properties/direction"
+                                                        },
+                                                        "datetime": {
+                                                            "$ref": "#/components/schemas/Submission/properties/created_at"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     },
@@ -161,33 +186,6 @@
                     }
                 },
                 "type": "object"
-            },
-            "AtmosphereResource": {
-                "properties": {
-                    "data": {
-                        "properties": {
-                            "type": {
-                                "type": "string"
-                            },
-                            "attributes": {
-                                "properties": {
-                                    "atmosphere": {
-                                        "$ref": "#/components/schemas/Submission/properties/atmosphere"
-                                    },
-                                    "datetime": {
-                                        "$ref": "#/components/schemas/Submission/properties/created_at"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        },
-                        "type": "object"
-                    }
-                },
-                "type": "object",
-                "xml": {
-                    "name": "AtmosphereResource"
-                }
             },
             "ClientResource": {
                 "properties": {

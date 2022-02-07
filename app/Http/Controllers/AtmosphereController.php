@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AtmosphereResource;
 use App\Models\Client;
 use Illuminate\Http\Request;
 
@@ -29,10 +28,8 @@ class AtmosphereController extends Controller
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent(@OA\Schema(
-     *              @OA\Xml(
-     *                  name="AtmosphereResource"
-     *              ),
+     *          @OA\JsonContent(
+     *              type="object",
      *              @OA\Property(
      *                  property="data",
      *                  type="object",
@@ -53,8 +50,8 @@ class AtmosphereController extends Controller
      *                      )
      *                  )
      *              )
-     *          ))
-     *      ),
+     *          )
+     *       ),
      *      @OA\Response(
      *          response=400,
      *          description="Bad Request"
@@ -67,6 +64,7 @@ class AtmosphereController extends Controller
      *         {"clientSecret": {}}
      *     }
      * )
+     *
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
