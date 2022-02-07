@@ -65,7 +65,6 @@ class AtmosphereController extends Controller
      *     }
      * )
      *
-     *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
