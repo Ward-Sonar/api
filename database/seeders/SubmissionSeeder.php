@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Client;
-use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -75,8 +74,6 @@ class SubmissionSeeder extends Seeder
      */
     public function generateShiftSubmissions(Client $client)
     {
-        $faker = new Generator();
-
         $submissions = [];
 
         $submissionTime = $client->shiftStart->clone();
@@ -87,7 +84,7 @@ class SubmissionSeeder extends Seeder
                 mt_rand(-2, 2),
                 mt_rand(-1, 1),
                 mt_rand(1, 7),
-                $faker->sentence(),
+                'Supplementary comments',
             ];
             $submissionTime->addMinutes(mt_rand(1, 10));
         }

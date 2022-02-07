@@ -179,8 +179,8 @@ class AtmosphereTest extends TestCase
                 'abandoned' => true,
             ]);
 
-        $averageAtmosphere = $submissions->pluck('atmosphere')->median();
-        $averageDirection = $submissions->pluck('direction')->median();
+        $averageAtmosphere = round($submissions->pluck('atmosphere')->median());
+        $averageDirection = round($submissions->pluck('direction')->median());
 
         $response = $this->getJson(
             '/api/' . $this->version . '/atmosphere/' . $this->client->urlkey,

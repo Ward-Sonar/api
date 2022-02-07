@@ -82,10 +82,12 @@ class AtmosphereController extends Controller
         $direction = $shiftSubmissions->pluck('direction')->median();
 
         return response()->json([
-            'attributes' => [
-                'atmosphere' => $atmosphere,
-                'direction' => $direction,
-                'datetime' => now()->toDateTimeString(),
+            'data' => [
+                'attributes' => [
+                    'atmosphere' => round($atmosphere),
+                    'direction' => round($direction),
+                    'datetime' => now()->toIso8601String(),
+                ],
             ],
         ]);
     }
